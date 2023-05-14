@@ -1,7 +1,7 @@
-# Projeto de Pesquisa
-SisLab Química - Almoxarifado eletrônico para gerenciamento de estoques do IFAM Campus Parintins
-## Descrição
-Este projeto está sendo desenvolvido com o framework de desenvolvimento React Native referente ao projeto de pesquisa do IFAM Campus Parintins
+# Research project
+SisLab Quimic - Electronic warehouse for inventory management at IFAM Campus Parintins
+## Description
+This project is being developed with the React Native development framework referring to the IFAM Campus Parintins research project
 ## Components
 1. SafeAreaContext
 2. React Navigation (Stack Navigation e Drawer Navigation)
