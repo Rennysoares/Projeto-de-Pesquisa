@@ -36,13 +36,7 @@ function NavReagentes({ navigation }){
         <Drawer.Screen 
         name="CadastroReagentes" 
         component={CadastroReagentes}
-        options={{title: 'Cadastrar reagentes', headerRight:()=>(
-          <Button
-            title='Voltar'
-            onPress={()=>{navigation.goBack()}}
-          />
-        )}}
-        
+        options={{headerShown: false}}
         />
         <Drawer.Screen 
         name="EditarReagentes" 

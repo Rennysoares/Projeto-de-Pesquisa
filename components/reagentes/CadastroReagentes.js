@@ -13,6 +13,17 @@ export default function CadastroReagentes( { navigation }){
   return(
     <SafeAreaView>
 
+      <View style={styles.headerReagentes}>
+        <TouchableOpacity
+          onPress={()=>{navigation.goBack();}}>
+          <Image
+            source={require('../../assets/setanavigator.png')}
+            style={styles.image}
+          />
+        </TouchableOpacity>
+        <Text style={styles.titleHeader}>Cadastrar reagente</Text>
+      </View>
+
       <Text style={styles.titleinput}>Nome do reagente: </Text>
       <TextInput
         style={styles.txtInput}
@@ -61,7 +72,7 @@ export default function CadastroReagentes( { navigation }){
 const styles = StyleSheet.create({
   headerReagentes:{
     backgroundColor: 'rgb(255, 255, 255)',
-    height: 50,
+    height: 55,
     flexDirection: 'row',
     alignItems: 'center'
   },
