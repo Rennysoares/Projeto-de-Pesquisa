@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Text, View, StyleSheet, Image, ScrollView} from 'react-native';
+import { Text, View, StyleSheet, Image, ScrollView, Button, BackHandler} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,19 +16,33 @@ import CardProduct from './components/CardProduct';
 
 const Drawer = createDrawerNavigator();
 
-function NavReagentes(){
+function NavReagentes({ navigation }){
   return(
     <NavigationContainer independent={true}>
-        <Drawer.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
+        <Drawer.Navigator initialRouteName="Home">
         <Drawer.Screen 
         name="Home" 
         component={TelaReagentes}
-        options={{title: 'Consultar Reagentes'}}
+        options={{
+          title: 'Consultar Reagentes',
+          headerRight:()=>(
+            <Button
+              title='Voltar'
+              onPress={()=>{navigation.goBack()}}
+            />
+          )
+        }}
         />
         <Drawer.Screen 
         name="CadastroReagentes" 
         component={CadastroReagentes}
-        options={{title: 'Cadastrar reagentes'}}
+        options={{title: 'Cadastrar reagentes', headerRight:()=>(
+          <Button
+            title='Voltar'
+            onPress={()=>{navigation.goBack()}}
+          />
+        )}}
+        
         />
         <Drawer.Screen 
         name="EditarReagentes" 

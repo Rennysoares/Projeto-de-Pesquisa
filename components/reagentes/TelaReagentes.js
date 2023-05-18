@@ -39,32 +39,10 @@ const Item = ({title, validity}) => (
 
 
 
-export default function TelaReagentes({ navigation }){
+export default function TelaReagentes({ navigation, }){
   const [searchText, setSearchText] = useState('');
   return(
     <SafeAreaView>
-    <View style={styles.headerReagentes}>
-    <TouchableOpacity
-      onPress={()=>{navigation.openDrawer();}}
-    >
-    <Image
-      source={require('../../assets/bardrawernavigation.png')}
-      style={{
-        height: 35,
-        width: 35,
-        marginHorizontal: 16,
-      }}
-    />
-    </TouchableOpacity>
-    <Text style={styles.titleHeader}>Gerenciamento de Reagentes</Text>
-    <TouchableOpacity
-          onPress={()=>{navigation.dispatch(StackActions.pop(1))}}>
-          <Image
-            source={require('../../assets/setanavigator.png')}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-    </View>
     <FlatList
       data={DATA}
       renderItem={({item}) => <Item title={item.title} validity={item.validity}/>}
