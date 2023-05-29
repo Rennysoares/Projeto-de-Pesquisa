@@ -1,17 +1,21 @@
-import { React, useState } from 'react';
-import { Text, View, StyleSheet, Image, ScrollView, Button, BackHandler} from 'react-native';
+//Importações dos Core Components do React e do React Native
+import { React, useState, useEffect } from 'react';
+import { Text, View, StyleSheet, Image, ScrollView, Button, BackHandler, TouchableOpacity} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+//Importações para a navegação - React Navigation
 import { NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
+//Reagentes - Importações de telas
 import CadastroReagentes from './components/reagentes/CadastroReagentes';
 import EditarReagentes from './components/reagentes/EditarReagentes';
 import DeletarReagentes from './components/reagentes/DeletarReagentes';
 import TelaReagentes from './components/reagentes/TelaReagentes';
 
+//Card personalizado
 import CardProduct from './components/CardProduct';
 
 const Drawer = createDrawerNavigator();
@@ -26,10 +30,13 @@ function NavReagentes({ navigation }){
         options={{
           title: 'Consultar Reagentes',
           headerRight:()=>(
-            <Button
-              title='Voltar'
-              onPress={()=>{navigation.goBack()}}
-            />
+            <TouchableOpacity
+              onPress={()=>{navigation.goBack();}}>
+              <Image
+                source={require('./assets/setanavigator.png')}
+                style={styles.seta}
+              />
+            </TouchableOpacity>
           )
         }}
         />
@@ -56,6 +63,7 @@ function NavReagentes({ navigation }){
 const Pilha = createStackNavigator();
 
 function TelaHome( { navigation }){
+
   return(
     <SafeAreaView>
       <View style={styles.conteinerHeader}>
@@ -184,5 +192,10 @@ const styles = StyleSheet.create({
   miniHeader:{
     flexDirection: 'row',
     justifyContent: 'space-between'
-  }
+  }, 
+  seta:{
+    height: 20,
+    width: 20,
+    marginHorizontal: 16,
+}
 });

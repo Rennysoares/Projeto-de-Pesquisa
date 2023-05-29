@@ -1,53 +1,129 @@
-import { React, useState } from 'react'
-import {Text,View,StyleSheet,Image, FlatList, BackHandler, TouchableOpacity} from 'react-native';
+import { React, useState, useEffect } from 'react'
+import {Text,View,StyleSheet,Image, FlatList, BackHandler, TouchableOpacity, Button, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StackActions } from '@react-navigation/native';
 
-const DATA = [
-  {
-    batch: '1',
-    title: 'Ácido Sulfúrico',
-    validity: '02/05/2024',
-    amount: '2',
-  },
-  {
-    batch: '2',
-    title: 'Ácido Clorídrico',
-    validity: '02/05/2024',
-    amount: '2',
-  },
-  {
-    batch: '3',
-    title: 'Monóxido de carbono',
-    validity: '02/05/2024',
-    amount: '2',
-  },
-  {
-    batch: '4',
-    title: 'Alaranjado de ....',
-    validity: '02/05/2024',
-    amount: '2',
-  },
-];
+import { DatabaseConnection } from '../../src/databases/DatabaseConnection'
 
-const Item = ({title, validity}) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-    <Text style={styles.title}>{validity}</Text>
-  </View>
-);
+const dbreagent = DatabaseConnection.getConnectionDBReagent();
 
+export default function TelaReagentes( { navigation } ){
 
+  const [data, setData] = useState([]);
+  const [isDatabaseReady, setDatabaseReady] = useState(false);
 
-export default function TelaReagentes({ navigation, }){
-  const [searchText, setSearchText] = useState('');
+  useEffect(() => {
+    const createTables = () => {
+      let firstTableCreated = false;
+      let secondTableCreated = false;
+  
+      dbreagent.transaction(tx => {
+        tx.executeSql(
+          'CREATE TABLE IF NOT EXISTS lote (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, validade TEXT, quantidade_geral REAL, unidade_medida TEXT, localizacao TEXT)',
+          [],
+          () => {
+            console.log('tabela lote criada com sucesso ou verificada se existe')
+            firstTableCreated = true;
+            if (firstTableCreated && secondTableCreated) {
+              setDatabaseReady(true);
+            }
+          },
+          error => {
+            console.log('Erro ao criar tabela produto:', error);
+          }
+        );
+  
+        tx.executeSql(
+          'CREATE TABLE IF NOT EXISTS produto (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, lote_id INTEGER, FOREIGN KEY (lote_id) REFERENCES lote (id))',
+          [],
+          () => {
+            console.log('tabela produto criada com sucesso ou verificada se existe')
+            secondTableCreated = true;
+            if (firstTableCreated && secondTableCreated) {
+              setDatabaseReady(true);
+            }
+          },
+          error => {
+            console.log('Erro ao criar tabela lote:', error);
+          }
+        );
+      });
+    };
+  
+    createTables();
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <View style={styles.item}>
+      <Text>Nome: {item.nome}</Text>
+      <Text>Número: {item.numero}</Text>
+      <Text>Quantidade Geral: {item.quantidade_geral + item.unidade_medida}</Text>
+    </View>
+  );
+
+  useEffect(() => {
+    if (isDatabaseReady) {
+      const fetchDados = () => {
+        dbreagent.transaction(tx => {
+          tx.executeSql(
+            'SELECT produto.nome, lote.numero, lote.quantidade_geral, lote.unidade_medida FROM produto JOIN lote ON produto.lote_id = lote.id',
+            [],
+            (_, { rows }) => {
+              setData(rows._array);
+            },
+            error => {
+              console.log('Erro ao buscar dados:', error);
+            }
+          );
+        });
+      };
+
+      fetchDados();
+    }
+  }, [isDatabaseReady]);
+
+  /*
+  function consultaDados(){
+    dbreagent.transaction(tx => {
+      tx.executeSql('SELECT produto.nome, lote.numero, lote.quantidade_geral, lote.unidade_medida FROM produto, lote ON produto.lote_id = lote.id ', [], (_, { rows }) => {
+        console.log(rows._array);
+      },
+      error => {
+        console.log('Erro ao consultar dados:', error);
+      }
+      );
+    });
+    dbreagent.transaction(tx => {
+      tx.executeSql('SELECT * FROM produto ', [], (_, { rows }) => {
+        console.log(rows._array);
+      },
+      error => {
+        console.log('Erro ao consultar dados:', error);
+      }
+      );
+      
+    });
+    dbreagent.transaction(tx => {
+      tx.executeSql('SELECT * FROM lote ', [], (_, { rows }) => {
+        console.log(rows._array);
+      },
+      error => {
+        console.log('Erro ao consultar dados:', error);
+      }
+      );
+      
+    });
+  }
+*/
+
   return(
     <SafeAreaView>
-    <FlatList
-      data={DATA}
-      renderItem={({item}) => <Item title={item.title} validity={item.validity}/>}
-      keyExtractor={item => item.id}
-    />
+      <View style={{height: '90%'}}>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(_, index) => index.toString()}
+        />
+      </View>
     </SafeAreaView>
   )
 }
@@ -59,7 +135,8 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginHorizontal: 16,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    flexWrap: 'wrap'
   },
   title: {
     fontSize: 15,
