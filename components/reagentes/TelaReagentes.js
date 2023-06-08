@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button } from 'react-native';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
 import { fetchDados } from './FetchDados';
@@ -26,7 +26,6 @@ const TelaReagentes = ({ navigation }) => {
   
 
   const handleShowModal = (item) => {
-    console.log(selectedItem)
     setSelectedItem(item);
     setModalVisible(true);
   };
@@ -149,12 +148,14 @@ const TelaReagentes = ({ navigation }) => {
             padding:10
           }}
         />
+        <View style={{height: '90%' }}>
         <FlatList
           data={filteredData}
           extraData={data}
           renderItem={renderItem}
           keyExtractor={(_, index) => index.toString()}
         />
+        </View>
       </View>
         <Modal
           visible={modalVisible}
@@ -164,25 +165,45 @@ const TelaReagentes = ({ navigation }) => {
         >
         <View style={styles.centermodal}>
           <View style={styles.modal}>
-            <Text>Reagente: {selectedItem?.nome}</Text>
-            <Text>Lote: {selectedItem?.numero}</Text>
-            <Text>Quantidade de Frascos: {selectedItem?.quantidade_frascos}</Text>
-            <Text>Quantidade de cada Frasco: {selectedItem?.quantidade_unitario}</Text>
-            <Text>Quantidade Total: {selectedItem?.quantidade_geral + selectedItem?.unidade_medida}</Text>
-            <Text>Validade: {selectedItem?.validade}</Text>
-            <Text>Localização: {selectedItem?.localizacao}</Text>
+            <View style={{
+              rowGap: 7
+            }}>
+              <Text>Reagente: {selectedItem?.nome}</Text>
+              <Text>Lote: {selectedItem?.numero}</Text>
+              <Text>Quantidade de Frascos: {selectedItem?.quantidade_frascos}</Text>
+              <Text>Quantidade de cada Frasco: {selectedItem?.quantidade_unitario}</Text>
+              <Text>Quantidade Total: {selectedItem?.quantidade_geral + selectedItem?.unidade_medida}</Text>
+              <Text>Validade: {selectedItem?.validade}</Text>
+              <Text>Localização: {selectedItem?.localizacao}</Text>
+            </View>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+            }}>
+              <TouchableOpacity>
+                <View>
+                  <Image
+                    source={require('../../assets/iconedit.png')}
+                    style={{
+                      height: 70,
+                      width: 70
+                    }}
+                  />
+                </View>
+              </TouchableOpacity>
 
-            <TouchableOpacity>
-              <View>
-                <Text>Editar</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={()=>{setModalVisible2(true); setModalVisible(false)}}>
-              <View>
-                <Text>Deletar</Text>
-              </View>
-            </TouchableOpacity>
+              <TouchableOpacity onPress={()=>{setModalVisible2(true); setModalVisible(false)}}>
+                <View>
+                <Image
+                    source={require('../../assets/icondelete.png')}
+                    style={{
+                      height: 70,
+                      width: 70
+                    }}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
 
             <TouchableOpacity onPress={() => {setModalVisible(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
                 <Text style={{fontSize: 30}}>x</Text>
@@ -220,11 +241,13 @@ export default TelaReagentes;
 
 const styles = StyleSheet.create({
   item: {
+    borderRadius: 10,
     backgroundColor: '#FFF',
     padding: 15,
     marginVertical: 5,
     marginHorizontal: 16,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     flexWrap: 'wrap'
   },
@@ -255,10 +278,11 @@ const styles = StyleSheet.create({
   },
   modal:{
     backgroundColor: 'rgb(255, 255, 255)',
-    padding: 30,
+    padding: 20,
     height: '50%',
     width: '75%',
     borderRadius: 15,
-    rowGap: 5
+    rowGap: 5,
+    justifyContent: 'space-evenly'
   }
 });

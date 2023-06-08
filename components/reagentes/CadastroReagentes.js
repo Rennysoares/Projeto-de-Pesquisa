@@ -8,7 +8,8 @@ import {
   Image, 
   Button,
   Switch,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -161,27 +162,27 @@ export default function CadastroReagentes( { navigation }){
           //disabled={true}
           onPress={()=>{
             if (!nomeReagente) {
-              alert('Por favor preencha o nome do Reagente!');
+              Alert.alert('Atenção','Por favor preencha o nome do Reagente!');
               return;
             }
             if(!lote){
-              alert('Por favor preencha o número de lote');
+              Alert.alert('Atenção','Por favor preencha o número de lote');
               return;
             }
             if(!quantidadeUnitario){
-              alert('Por favor preencha a quantidade de cada frascos');
+              Alert.alert('Atenção','Por favor preencha a quantidade de cada frascos');
               return;
             }
             if(!quantidadeFrascos){
-              alert('Por favor preencha a quantidade de frascos');
+              Alert.alert('Atenção','Por favor preencha a quantidade de frascos');
               return;
             }
             if(!validade){
-              alert('Por favor preencha validade');
+              Alert.alert('Atenção','Por favor preencha validade');
               return;
             }
             insertDatas();
-            alert('Reagentes Cadastrados com sucesso');
+            Alert.alert('Sucesso','Reagentes Cadastrados com sucesso');
             setNomeReagente('')
             setLote('')
             setQuantidadeUnitario('')
