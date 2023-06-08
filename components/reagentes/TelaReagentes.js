@@ -1,45 +1,98 @@
-import { React, useState, useEffect } from 'react'
-import {Text,View,StyleSheet,Image, FlatList, BackHandler, TouchableOpacity, Button, Alert} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { DatabaseConnection } from '../../src/databases/DatabaseConnection'
+import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
+import { fetchDados } from './FetchDados';
+import { TextInput } from 'react-native-gesture-handler';
 
 const dbreagent = DatabaseConnection.getConnectionDBReagent();
 
-export default function TelaReagentes( { navigation } ){
-
+const TelaReagentes = ({ navigation }) => {
+  
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [isDatabaseReady, setDatabaseReady] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modalVisible2, setModalVisible2] = useState(false);
+
+  const handleSearch = (text) => {
+    const filteredItems = data.filter((item) => {
+      // Filtre os itens com base nas suas propriedades relevantes
+      return item.nome.toLowerCase().includes(text.toLowerCase()); // Exemplo: filtrando pelo nome
+    });
+    setFilteredData(filteredItems);
+  };
+  
+
+  const handleShowModal = (item) => {
+    console.log(selectedItem)
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+  
+  const deleteItem = (itemId) => {
+    dbreagent.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM produto WHERE id = ?',
+        [itemId],
+        () => {
+          console.log('Item deletado com sucesso!');
+        },
+        error => {
+          console.log('Erro ao deletar item:', error);
+        }
+      );
+    });
+
+    dbreagent.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM lote WHERE id = ?',
+        [itemId],
+        () => {
+          console.log('Item deletado com sucesso!');
+        },
+        error => {
+          console.log('Erro ao deletar item:', error);
+        }
+      );
+    });
+    setModalVisible2(false)
+    setModalVisible(false)
+    fetchDados(setData, dbreagent, setFilteredData);    
+  };
 
   useEffect(() => {
     const createTables = () => {
       let firstTableCreated = false;
       let secondTableCreated = false;
-  
+
       dbreagent.transaction(tx => {
         tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS lote (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, validade TEXT, quantidade_geral REAL, unidade_medida TEXT, localizacao TEXT)',
+          'CREATE TABLE IF NOT EXISTS lote (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, validade TEXT, quantidade_geral REAL, unidade_medida TEXT, localizacao TEXT, quantidade_frascos, quantidade_unitario)',
           [],
           () => {
-            console.log('tabela lote criada com sucesso ou verificada se existe')
+            console.log('tabela lote criada com sucesso ou verificada se existe');
             firstTableCreated = true;
             if (firstTableCreated && secondTableCreated) {
               setDatabaseReady(true);
+              fetchDados(setData, dbreagent, setFilteredData);
             }
           },
           error => {
             console.log('Erro ao criar tabela produto:', error);
           }
         );
-  
+
         tx.executeSql(
           'CREATE TABLE IF NOT EXISTS produto (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, lote_id INTEGER, FOREIGN KEY (lote_id) REFERENCES lote (id))',
           [],
           () => {
-            console.log('tabela produto criada com sucesso ou verificada se existe')
+            console.log('tabela produto criada com sucesso ou verificada se existe');
             secondTableCreated = true;
             if (firstTableCreated && secondTableCreated) {
               setDatabaseReady(true);
+              fetchDados(setData, dbreagent, setFilteredData);
             }
           },
           error => {
@@ -48,90 +101,127 @@ export default function TelaReagentes( { navigation } ){
         );
       });
     };
-  
+
     createTables();
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log('A tela principal foi ativada');
+      fetchDados(setData, dbreagent, setFilteredData);
+    });
+
+    
+    unsubscribe;
+  }, [navigation]);
+
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text>Nome: {item.nome}</Text>
-      <Text>Número: {item.numero}</Text>
-      <Text>Quantidade Geral: {item.quantidade_geral + item.unidade_medida}</Text>
+      
+      <View>
+        <Text>Reagente: {item.nome}</Text>
+        <Text>Quantidade Geral: {item.quantidade_geral + item.unidade_medida}</Text>
+        <Text>Validade: {item.validade}</Text>
+      </View>
+      <View>
+        <TouchableOpacity 
+          onPress={() => handleShowModal(item)}
+          >
+          <Image
+          source={require('../../assets/iconmore.png')}
+          style={{height: 50, width: 50}}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
-  useEffect(() => {
-    if (isDatabaseReady) {
-      const fetchDados = () => {
-        dbreagent.transaction(tx => {
-          tx.executeSql(
-            'SELECT produto.nome, lote.numero, lote.quantidade_geral, lote.unidade_medida FROM produto JOIN lote ON produto.lote_id = lote.id',
-            [],
-            (_, { rows }) => {
-              setData(rows._array);
-            },
-            error => {
-              console.log('Erro ao buscar dados:', error);
-            }
-          );
-        });
-      };
-
-      fetchDados();
-    }
-  }, [isDatabaseReady]);
-
-  /*
-  function consultaDados(){
-    dbreagent.transaction(tx => {
-      tx.executeSql('SELECT produto.nome, lote.numero, lote.quantidade_geral, lote.unidade_medida FROM produto, lote ON produto.lote_id = lote.id ', [], (_, { rows }) => {
-        console.log(rows._array);
-      },
-      error => {
-        console.log('Erro ao consultar dados:', error);
-      }
-      );
-    });
-    dbreagent.transaction(tx => {
-      tx.executeSql('SELECT * FROM produto ', [], (_, { rows }) => {
-        console.log(rows._array);
-      },
-      error => {
-        console.log('Erro ao consultar dados:', error);
-      }
-      );
-      
-    });
-    dbreagent.transaction(tx => {
-      tx.executeSql('SELECT * FROM lote ', [], (_, { rows }) => {
-        console.log(rows._array);
-      },
-      error => {
-        console.log('Erro ao consultar dados:', error);
-      }
-      );
-      
-    });
-  }
-*/
-
-  return(
-    <SafeAreaView>
-      <View style={{height: '90%'}}>
+  return (
+    <View>
+      <View>
+        <TextInput
+          placeholder="Pesquise aqui"
+          placeholderTextColor='rgb(200, 200, 200)'
+          onChangeText={handleSearch}
+          style={{
+            backgroundColor: 'rgb(255, 255, 255)',
+            margin: 4,
+            padding:10
+          }}
+        />
         <FlatList
-          data={data}
+          data={filteredData}
+          extraData={data}
           renderItem={renderItem}
           keyExtractor={(_, index) => index.toString()}
         />
       </View>
-    </SafeAreaView>
-  )
-}
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+        <View style={styles.centermodal}>
+          <View style={styles.modal}>
+            <Text>Reagente: {selectedItem?.nome}</Text>
+            <Text>Lote: {selectedItem?.numero}</Text>
+            <Text>Quantidade de Frascos: {selectedItem?.quantidade_frascos}</Text>
+            <Text>Quantidade de cada Frasco: {selectedItem?.quantidade_unitario}</Text>
+            <Text>Quantidade Total: {selectedItem?.quantidade_geral + selectedItem?.unidade_medida}</Text>
+            <Text>Validade: {selectedItem?.validade}</Text>
+            <Text>Localização: {selectedItem?.localizacao}</Text>
+
+            <TouchableOpacity>
+              <View>
+                <Text>Editar</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={()=>{setModalVisible2(true); setModalVisible(false)}}>
+              <View>
+                <Text>Deletar</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {setModalVisible(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
+                <Text style={{fontSize: 30}}>x</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        </Modal>
+        <Modal
+          visible={modalVisible2}
+          transparent={true}
+          animationType="fade"
+        >
+        <View style={styles.centermodal}>
+          <View style={styles.modal}>
+            <Text>Tem certeza?</Text>
+            <TouchableOpacity
+              onPress={()=>{deleteItem(selectedItem.id)}}
+            >
+              <Text>Sim</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+             onPress={()=>{setModalVisible2(false), setModalVisible(true)}}
+            >
+              <Text>Não</Text>
+            </TouchableOpacity>
+          </View>  
+        </View>
+        </Modal>
+    </View>
+  );
+};
+
+export default TelaReagentes;
+
 
 const styles = StyleSheet.create({
   item: {
     backgroundColor: '#FFF',
-    padding: 20,
+    padding: 15,
     marginVertical: 5,
     marginHorizontal: 16,
     flexDirection: 'row',
@@ -155,5 +245,20 @@ const styles = StyleSheet.create({
     height: 25,
     width: 25,
     marginHorizontal: 16,
+  },
+  centermodal:{
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+  modal:{
+    backgroundColor: 'rgb(255, 255, 255)',
+    padding: 30,
+    height: '50%',
+    width: '75%',
+    borderRadius: 15,
+    rowGap: 5
   }
 });

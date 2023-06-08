@@ -75,7 +75,7 @@ function TelaHome( { navigation }){
         />
         <View style={styles.conteinerTextHeader}>
           <Text style={styles.titleTop}>Bem vindo ao</Text>
-          <Text style={styles.titleNameApp}>Nome do App!</Text>
+          <Text style={styles.titleNameApp}>SisLab Química</Text>
           <Text style={styles.subtitle}>App para gerenciamento dos estoques do IFAM</Text>
         </View>
         <View style={styles.conteinerImage}>
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   titleNameApp:{
     color: '#000',
-    fontSize: 25,
+    fontSize: 23,
     fontWeight: 'bold',
     paddingTop: 6,
     paddingBottom: 6

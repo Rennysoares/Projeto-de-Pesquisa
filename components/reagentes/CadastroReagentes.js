@@ -47,8 +47,8 @@ export default function CadastroReagentes( { navigation }){
 
     dbreagent.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO lote (numero, validade, quantidade_geral, unidade_medida, localizacao) VALUES (?, ?, ?, ?, ?)',
-        [lote, validade, parseFloat(quantidadeCalculada), sufixo, localizacao],
+        'INSERT INTO lote (numero, validade, quantidade_geral, unidade_medida, localizacao, quantidade_frascos, quantidade_unitario) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [lote, validade, parseFloat(quantidadeCalculada), sufixo, localizacao, quantidadeFrascos, quantidadeUnitario],
         (tx, result) => {
           const loteId = result.insertId; // Recupera o ID do lote inserido
           console.log('Lote inserido com sucesso', loteId);
@@ -108,26 +108,27 @@ export default function CadastroReagentes( { navigation }){
       <Text style={styles.titleinput}>Quantidade de cada frasco: </Text>
       
       <View style={{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', margin: 10}}>
-      <TextInput
-        value={quantidadeUnitario}
-        onChangeText={setQuantidadeUnitario}
+        <View style={{alignItems: 'center', flexDirection: 'row'}}>
+        <TextInput
+          value={quantidadeUnitario}
+          onChangeText={setQuantidadeUnitario}
 
-        style={styles.txtInput}
-        placeholder="Ex: 120"
-        placeholderTextColor='rgb(200, 200, 200)'
-      />
-      
+          style={[styles.txtInput, {width: 100}]}
+          placeholder="Ex: 120"
+          placeholderTextColor='rgb(200, 200, 200)'
+        />
         <Text>{sufixo}</Text>
+        </View>
         <Switch
           value={boolunidadeMedida}
           onValueChange={setBoolUnidadeMedida}
         />
+        
       </View>
       <Text style={styles.titleinput}>Quantidade de frascos: </Text>
       <TextInput
         value={quantidadeFrascos}
         onChangeText={setQuantidadeFrascos}
-
         style={styles.txtInput}
         placeholder="Ex: 7234923"
         placeholderTextColor='rgb(200, 200, 200)'
@@ -140,6 +141,7 @@ export default function CadastroReagentes( { navigation }){
           placeholder="Ex: 01-01-2021"
           placeholderTextColor='rgb(200, 200, 200)'
           onChangeText={setValidade}
+          value={validade}
           keyboardType="numeric"
           style={styles.txtInput}
         />
@@ -179,8 +181,13 @@ export default function CadastroReagentes( { navigation }){
               return;
             }
             insertDatas();
-            navigation.goBack();
             alert('Reagentes Cadastrados com sucesso');
+            setNomeReagente('')
+            setLote('')
+            setQuantidadeUnitario('')
+            setQuantidadeFrascos('')
+            setValidade('')
+            setLocalizacao('')
           }}
         />
       </ScrollView>
