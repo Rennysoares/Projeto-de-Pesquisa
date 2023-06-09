@@ -191,6 +191,7 @@ export default function CadastroReagentes( { navigation }){
             setLocalizacao('')
           }}
         />
+
       </ScrollView>
     </SafeAreaView>
   )

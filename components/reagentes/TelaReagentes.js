@@ -18,10 +18,10 @@ const TelaReagentes = ({ navigation }) => {
 
   const handleSearch = (text) => {
     const filteredItems = data.filter((item) => {
-      // Filtre os itens com base nas suas propriedades relevantes
-      return item.nome.toLowerCase().includes(text.toLowerCase()); // Exemplo: filtrando pelo nome
+      return item.nome.toLowerCase().includes(text.toLowerCase());
     });
     setFilteredData(filteredItems);
+    //setando o array secundário para a flatlist
   };
   
 
