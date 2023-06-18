@@ -180,27 +180,31 @@ const TelaReagentes = ({ navigation }) => {
               flexDirection: 'row',
               justifyContent: 'space-around',
             }}>
-              <TouchableOpacity>
-                <View>
-                  <Image
+              <TouchableOpacity
+              onPress={()=>{setModalVisible(false); console.log(selectedItem);navigation.navigate('EditarReagentes', {selectedItem})}}
+              >
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 255, 0)'}]}>
+                  {/*<Image
                     source={require('../../assets/iconedit.png')}
                     style={{
                       height: 70,
                       width: 70
                     }}
-                  />
+                  />*/}
+                  <Text style={styles.txtbuttonmodal} >Editar</Text>
                 </View>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={()=>{setModalVisible2(true); setModalVisible(false)}}>
-                <View>
-                <Image
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 0, 0)'}]}>
+                {/*<Image
                     source={require('../../assets/icondelete.png')}
                     style={{
                       height: 70,
                       width: 70
                     }}
-                  />
+                  />*/}
+                  <Text style={styles.txtbuttonmodal}>Apagar</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -217,18 +221,24 @@ const TelaReagentes = ({ navigation }) => {
           animationType="fade"
         >
         <View style={styles.centermodal}>
-          <View style={styles.modal}>
-            <Text>Tem certeza?</Text>
-            <TouchableOpacity
-              onPress={()=>{deleteItem(selectedItem.id)}}
-            >
-              <Text>Sim</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-             onPress={()=>{setModalVisible2(false), setModalVisible(true)}}
-            >
-              <Text>Não</Text>
-            </TouchableOpacity>
+          <View style={styles.modal2}>
+            <Text style={{textAlign: 'center'}}>Tem certeza?</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+              <TouchableOpacity
+                onPress={()=>{deleteItem(selectedItem.id)}}
+              >
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(0, 255, 0 )'}]}>
+                <Text>Sim</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+              onPress={()=>{setModalVisible2(false), setModalVisible(true)}}
+              >
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 0, 0 )'}]}>
+                <Text>Não</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>  
         </View>
         </Modal>
@@ -284,5 +294,25 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     rowGap: 5,
     justifyContent: 'space-evenly'
-  }
+  },
+  buttonmodal:{
+    borderRadius: 10,
+    height: 40,
+    width: 90,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  txtbuttonmodal:{
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  modal2:{
+    backgroundColor: 'rgb(255, 255, 255)',
+    padding: 20,
+    height: '25%',
+    width: '75%',
+    borderRadius: 15,
+    rowGap: 5,
+    justifyContent: 'space-around'
+  },
 });

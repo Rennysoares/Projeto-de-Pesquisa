@@ -108,7 +108,7 @@ export default function CadastroReagentes( { navigation }){
 
       <Text style={styles.titleinput}>Quantidade de cada frasco: </Text>
       
-      <View style={{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', margin: 10}}>
+      <View style={{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',}}>
         <View style={{alignItems: 'center', flexDirection: 'row'}}>
         <TextInput
           value={quantidadeUnitario}
@@ -120,11 +120,12 @@ export default function CadastroReagentes( { navigation }){
         />
         <Text>{sufixo}</Text>
         </View>
+        <View style={{width: 100, alignItems: 'center'}}>
         <Switch
           value={boolunidadeMedida}
           onValueChange={setBoolUnidadeMedida}
         />
-        
+        </View>
       </View>
       <Text style={styles.titleinput}>Quantidade de frascos: </Text>
       <TextInput
@@ -156,9 +157,8 @@ export default function CadastroReagentes( { navigation }){
         placeholderTextColor='rgb(200, 200, 200)'
         style={styles.txtInput}
       />
-
-        <Button
-          title='Cadastrar reagentes'
+      <View style={{alignItems: 'center', width: '100%'}}>
+        <TouchableOpacity
           //disabled={true}
           onPress={()=>{
             if (!nomeReagente) {
@@ -190,8 +190,14 @@ export default function CadastroReagentes( { navigation }){
             setValidade('')
             setLocalizacao('')
           }}
-        />
-
+        >
+          <View style={styles.button}>
+            <Text style={{fontSize: 16, color: '#fff'}}>Cadastrar Reagentes</Text>
+          </View>
+          </TouchableOpacity>
+        </View>
+        <View style={{height: 100}}>
+        </View>
       </ScrollView>
     </SafeAreaView>
   )
@@ -222,5 +228,13 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
     marginHorizontal: 16,
-}
+  },
+  button:{
+    height:45,
+    width: 230,
+    backgroundColor: 'rgb(0, 140, 255)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10
+  }
 });

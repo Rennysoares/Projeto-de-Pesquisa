@@ -43,12 +43,15 @@ function NavReagentes({ navigation }){
         <Drawer.Screen 
         name="CadastroReagentes" 
         component={CadastroReagentes}
-        options={{headerShown: false}}
+        options={{headerShown: false, title: 'Cadastrar reagentes'}}
         />
         <Drawer.Screen 
         name="EditarReagentes" 
         component={EditarReagentes}
-        options={{title: 'Editar reagentes'}}
+        options={{
+          drawerItemStyle:{display: 'none'},
+          headerShown: false
+        }}
         />
         <Drawer.Screen 
         name="DeletarReagentes" 
