@@ -181,7 +181,7 @@ const TelaReagentes = ({ navigation }) => {
               justifyContent: 'space-around',
             }}>
               <TouchableOpacity
-              onPress={()=>{setModalVisible(false); console.log(selectedItem);navigation.navigate('EditarReagentes', {selectedItem})}}
+              onPress={()=>{setModalVisible(false);navigation.navigate('EditarReagentes', {selectedItem})}}
               >
                 <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 255, 0)'}]}>
                   {/*<Image
