@@ -17,6 +17,8 @@ import TelaReagentes from './components/reagentes/TelaReagentes';
 
 //Card personalizado
 import CardProduct from './components/CardProduct';
+import Validity from './components/Validade';
+import Graficos from './components/Graficos';
 
 const Drawer = createDrawerNavigator();
 
@@ -69,6 +71,7 @@ function TelaHome( { navigation }){
 
   return(
     <SafeAreaView>
+      <ScrollView>
       <View style={styles.conteinerHeader}>
         <LinearGradient
         colors={['rgb(255, 255, 255)', 'rgb(0, 255, 0)']}
@@ -88,7 +91,7 @@ function TelaHome( { navigation }){
           />
         </View>
       </View>
-
+      
       <View style={styles.conteinerProducts}>
         <Text>Selecione o tipo de produto a ser gerenciado:</Text>
         <View style={styles.conteinerCards}>
@@ -116,11 +119,12 @@ function TelaHome( { navigation }){
       </View>
 
       <View style={styles.conteinerValidade}>
-        <View style={styles.miniHeader}>
-          <Text>Controle de Validade de estoque</Text>
-          <Text>Exibir todos</Text>
-        </View>
+        <Validity/>
       </View>
+      <View style={styles.conteinerGraficos}>
+        <Graficos/>
+      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -190,15 +194,15 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   conteinerValidade:{
-    padding: 15
+    padding: 15,
   },
-  miniHeader:{
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  }, 
   seta:{
     height: 20,
     width: 20,
     marginHorizontal: 16,
-}
+  },
+  conteinerGraficos:{
+    height: 400,
+    alignItems: 'center'
+  }
 });

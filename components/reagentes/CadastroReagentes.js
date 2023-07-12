@@ -100,7 +100,7 @@ export default function CadastroReagentes( { navigation }){
       <TextInput
         value={lote}
         onChangeText={setLote}
-
+        keyboardType="numeric"
         style={styles.txtInput}
         placeholder="Ex: 7234923"
         placeholderTextColor='rgb(200, 200, 200)'
@@ -113,7 +113,7 @@ export default function CadastroReagentes( { navigation }){
         <TextInput
           value={quantidadeUnitario}
           onChangeText={setQuantidadeUnitario}
-
+          keyboardType="numeric"
           style={[styles.txtInput, {width: 100}]}
           placeholder="Ex: 120"
           placeholderTextColor='rgb(200, 200, 200)'
@@ -132,7 +132,8 @@ export default function CadastroReagentes( { navigation }){
         value={quantidadeFrascos}
         onChangeText={setQuantidadeFrascos}
         style={styles.txtInput}
-        placeholder="Ex: 7234923"
+        placeholder="Ex: 2"
+        keyboardType="numeric"
         placeholderTextColor='rgb(200, 200, 200)'
       />
 
