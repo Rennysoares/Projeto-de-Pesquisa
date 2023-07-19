@@ -25,24 +25,13 @@ export default function CadastroReagentes( { navigation }){
   const[quantidadeUnitario, setQuantidadeUnitario] = useState('')
   const[validade, setValidade] = useState('')
   const[localizacao, setLocalizacao] = useState('')
-  const[boolunidadeMedida, setBoolUnidadeMedida] = useState(false);
-  const[sufixo, setSufixo] = useState('ml');
+  const[sufixo, setSufixo] = useState();
   const[quantidadeFrascos, setQuantidadeFrascos] = useState('')
   const[quantidadeCalculada, setQuantidadeCalculada] = useState('')
 
   useEffect(()=>{
     setQuantidadeCalculada(parseFloat(quantidadeFrascos)*parseFloat(quantidadeUnitario))
   })
-
-  useEffect(() => {
-    // Atualiza o sufixo quando o valor do switch é alterado
-    if (boolunidadeMedida) {
-      setSufixo('ml');
-    } else {
-      setSufixo('g');
-    }
-
-  }, [boolunidadeMedida]);
 
   function insertDatas() {
 
@@ -108,7 +97,7 @@ export default function CadastroReagentes( { navigation }){
 
       <Text style={styles.titleinput}>Quantidade de cada frasco: </Text>
       
-      <View style={{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',}}>
+      <View style={{alignItems: 'center', flexDirection: 'row',}}>
         <View style={{alignItems: 'center', flexDirection: 'row'}}>
         <TextInput
           value={quantidadeUnitario}
@@ -118,12 +107,15 @@ export default function CadastroReagentes( { navigation }){
           placeholder="Ex: 120"
           placeholderTextColor='rgb(200, 200, 200)'
         />
-        <Text>{sufixo}</Text>
         </View>
         <View style={{width: 100, alignItems: 'center'}}>
-        <Switch
-          value={boolunidadeMedida}
-          onValueChange={setBoolUnidadeMedida}
+        <TextInput
+          value={sufixo}
+          onChangeText={setSufixo}
+          style={[styles.txtInput, {width: 100}]}
+          autoCapitalize="none"
+          placeholder="Ex: ml"
+          placeholderTextColor='rgb(200, 200, 200)'
         />
         </View>
       </View>
@@ -133,6 +125,7 @@ export default function CadastroReagentes( { navigation }){
         onChangeText={setQuantidadeFrascos}
         style={styles.txtInput}
         placeholder="Ex: 2"
+        maxLength={3}
         keyboardType="numeric"
         placeholderTextColor='rgb(200, 200, 200)'
       />
@@ -172,6 +165,10 @@ export default function CadastroReagentes( { navigation }){
             }
             if(!quantidadeUnitario){
               Alert.alert('Atenção','Por favor preencha a quantidade de cada frascos');
+              return;
+            }
+            if(!sufixo){
+              Alert.alert('Atenção','Por favor preencha a unidade de medida');
               return;
             }
             if(!quantidadeFrascos){

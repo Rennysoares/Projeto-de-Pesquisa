@@ -8,20 +8,78 @@ const dbreagent = DatabaseConnection.getConnectionDBReagent();
 
 export default function EditarReagentes({route, navigation}){
 
-  const dataparms = route.params
-  const id = route.params.selectedItem?.id
-  const [data, setData] = useState([]);
   const [modalVisibleRename, setModalVisibleRename] = useState(false);
 
+  //Dados passados por parâmetros (dados qualitativos)
+  const id_params = route.params.selectedItem?.id
+  const nome_params = route.params.selectedItem?.nome
+  const lote_params = route.params.selectedItem?.numero
+  const validade_params = route.params.selectedItem?.validade
+  const localizacao_params = route.params.selectedItem?.localizacao
+
+  ////Dados passados por parâmetros (dados quantitativos)
+  const quantidade_unitario_params = route.params.selectedItem?.quantidade_unitario
+  const quantidade_frascos_params = route.params.selectedItem?.quantidade_frascos
+  const quantidade_geral_params = route.params.selectedItem?.quantidade_geral
+  const unidade_medida_params = route.params.selectedItem?.unidade_medida
+
+  //Variáveis para modificações simples
   const[nomeReagente, setNomeReagente] = useState('')
   const[lote, setLote ] = useState('')
-  const[quantidadeUnitario, setQuantidadeUnitario] = useState('')
   const[validade, setValidade] = useState('')
   const[localizacao, setLocalizacao] = useState('')
-  const[boolunidadeMedida, setBoolUnidadeMedida] = useState(false);
-  const[sufixo, setSufixo] = useState('ml');
+
+  //Variáveis para modificações com cálculos e sufixos
+  const[quantidadeUnitario, setQuantidadeUnitario] = useState('')
   const[quantidadeFrascos, setQuantidadeFrascos] = useState('')
   const[quantidadeCalculada, setQuantidadeCalculada] = useState('')
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+    });
+    unsubscribe;
+  }, [navigation]);
+
+  function setAllDatas(){
+    setNomeReagente(nome_params);
+    setLote(lote_params);
+    //setValidade(validade_params);
+    setLocalizacao(localizacao_params);
+  }
+
+  function updateData_Rename(){
+    console.log('Nome: ' + nomeReagente + ' Lote: ' +  lote + ' Validade: ' + validade + ' Localização: ' + localizacao)
+    dbreagent.transaction((tx) => {
+      tx.executeSql(
+        'UPDATE produto SET nome = ? WHERE id = ?;',
+        [nomeReagente, id_params],
+        (_, result) => {
+        },
+        (_, error) => {
+          console.error('Erro na atualização da Tabela produto:', error);
+          return false;
+        }
+      );
+    
+      tx.executeSql(
+        'UPDATE lote SET numero = ?, validade = ?, localizacao = ? WHERE id = ?;',
+        [lote, validade, localizacao, id_params],
+        (_, result) => {
+        },
+        (_, error) => {
+          console.error('Erro na atualização da Tabela lote:', error);
+          return false;
+        }
+      );
+    }, (error) => {
+      // Trate o erro da transação
+      console.error('Erro na transação:', error);
+    }, () => {
+      // A transação foi concluída com sucesso
+      console.log('Transação concluída com sucesso');
+    });
+    
+  }
 
   return(
     <SafeAreaView>
@@ -35,17 +93,36 @@ export default function EditarReagentes({route, navigation}){
         </TouchableOpacity>
         <Text style={styles.titleHeader}>Editar reagente</Text>
       </View>
-      <Text style={{textAlign: 'center'}}>Reagente: {dataparms.selectedItem?.nome}</Text>
-      
-      <TouchableOpacity
-        onPress={()=>{setModalVisibleRename(true)}}
-      >
-        <Text>{id}</Text>
-        <Text>Editar nome, lote, validade, localização ou unidade de medida</Text>
-      </TouchableOpacity>
 
-      <Text>Modificar a quantidade do reagente no estoque</Text>
-      <Text>Adicionar frascos no lote</Text>
+      <Text style={{textAlign: 'center'}}>Reagente: {nome_params}</Text>
+      <Text>Id: {id_params}</Text>
+      <Text>Lote: {lote_params}</Text>
+      <Text>Validade: {validade_params}</Text>
+      <Text>Localização: {localizacao_params}</Text>
+
+      <View style={{alignItems: 'center', gap: 20}}>
+        <TouchableOpacity
+          onPress={()=>{setModalVisibleRename(true); setAllDatas()}}
+        >
+          <View style={styles.button}>
+            <Text style={{fontSize: 16, color: '#fff'}}>Editar Dados</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <View style={styles.button}>
+            <Text style={{fontSize: 16, color: '#fff'}}>Atualizar estoque</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <View style={styles.button}>
+            <Text style={{fontSize: 16, color: '#fff'}}>Adicionar Frascos</Text>
+          </View>
+        </TouchableOpacity>
+
+        <Button title='Consultar Dados' onPress={()=>{console.log(route.params.selectedItem)}}/>
+      </View>
 
       <Modal
           visible={modalVisibleRename}
@@ -75,18 +152,7 @@ export default function EditarReagentes({route, navigation}){
               placeholder="Ex: 7234923"
               placeholderTextColor='rgb(200, 200, 200)'
             />
-
-            <Text style={styles.titleinput}>Unidade de medida do lote: </Text>
-            
-            <View style={{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',}}>
-              <Text>{sufixo}</Text>
-              <View style={{width: 100, alignItems: 'center'}}>
-              <Switch
-                value={boolunidadeMedida}
-                onValueChange={setBoolUnidadeMedida}
-              />
-              </View>
-            </View>
+                      
             <Text style={styles.titleinput}>Validade: </Text>
 
             <MaskedTextInput
@@ -94,7 +160,7 @@ export default function EditarReagentes({route, navigation}){
                 placeholder="Ex: 01-01-2021"
                 placeholderTextColor='rgb(200, 200, 200)'
                 onChangeText={setValidade}
-                value={validade}
+                value={validade_params}
                 keyboardType="numeric"
                 style={styles.txtInput}
               />
@@ -120,20 +186,14 @@ export default function EditarReagentes({route, navigation}){
                     Alert.alert('Atenção','Por favor preencha o número de lote');
                     return;
                   }
-                  if(!quantidadeUnitario){
-                    Alert.alert('Atenção','Por favor preencha a quantidade de cada frascos');
-                    return;
-                  }
-                  if(!quantidadeFrascos){
-                    Alert.alert('Atenção','Por favor preencha a quantidade de frascos');
-                    return;
-                  }
                   if(!validade){
                     Alert.alert('Atenção','Por favor preencha validade');
                     return;
                   }
+                  updateData_Rename()
                   Alert.alert('Sucesso','Dados com sucesso');
-
+                  setModalVisibleRename(false)
+                  navigation.goBack();
                 }}
               >
                 <View style={styles.button}>
@@ -144,7 +204,6 @@ export default function EditarReagentes({route, navigation}){
               <View style={{height: 100}}>
               </View>
             </ScrollView>
-
             <TouchableOpacity onPress={() => {setModalVisibleRename(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
                 <Text style={{fontSize: 30}}>x</Text>
             </TouchableOpacity>
