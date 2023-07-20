@@ -9,6 +9,7 @@ const dbreagent = DatabaseConnection.getConnectionDBReagent();
 export default function EditarReagentes({route, navigation}){
 
   const [modalVisibleRename, setModalVisibleRename] = useState(false);
+  const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
 
   //Dados passados por parâmetros (dados qualitativos)
   const id_params = route.params.selectedItem?.id
@@ -32,7 +33,7 @@ export default function EditarReagentes({route, navigation}){
   //Variáveis para modificações com cálculos e sufixos
   const[quantidadeUnitario, setQuantidadeUnitario] = useState('')
   const[quantidadeFrascos, setQuantidadeFrascos] = useState('')
-  const[quantidadeCalculada, setQuantidadeCalculada] = useState('')
+  const[quantidadeGeral, setQuantidadeGeral] = useState('')
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -47,6 +48,9 @@ export default function EditarReagentes({route, navigation}){
     setLocalizacao(localizacao_params);
   }
 
+  function setUpdateQtdeGeral(){
+    setQuantidadeGeral(''+quantidade_geral_params)
+  }
   function updateData_Rename(){
     console.log('Nome: ' + nomeReagente + ' Lote: ' +  lote + ' Validade: ' + validade + ' Localização: ' + localizacao)
     dbreagent.transaction((tx) => {
@@ -81,6 +85,25 @@ export default function EditarReagentes({route, navigation}){
     
   }
 
+  function updateData_Update(){
+    dbreagent.transaction((tx) => {
+      tx.executeSql(
+        'UPDATE lote SET quantidade_geral = ? WHERE id = ?;',
+        [parseFloat(quantidadeGeral), id_params],
+        (_, result) => {
+          console.log('Estoque atualizado com sucesso!')
+          Alert.alert('Sucesso','Estoque atualizado com com sucesso');
+        },
+        (_, error) => {
+          console.error('Erro na atualização da Tabela lote:', error);
+          Alert.alert('Erro','Erro na atualização da Tabela lote (consulte o desenvolvedor): '+ error);
+          return false;
+        }
+      );
+    });
+    
+  }
+
   return(
     <SafeAreaView>
       <View style={styles.headerReagentes}>
@@ -109,7 +132,9 @@ export default function EditarReagentes({route, navigation}){
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=>{setModalVisibleUpdate(true); setUpdateQtdeGeral()}}
+        >
           <View style={styles.button}>
             <Text style={{fontSize: 16, color: '#fff'}}>Atualizar estoque</Text>
           </View>
@@ -122,6 +147,7 @@ export default function EditarReagentes({route, navigation}){
         </TouchableOpacity>
 
         <Button title='Consultar Dados' onPress={()=>{console.log(route.params.selectedItem)}}/>
+        <Button title='Consultar Dados' onPress={()=>{console.log(quantidade_geral_params)}}/>
       </View>
 
       <Modal
@@ -197,7 +223,7 @@ export default function EditarReagentes({route, navigation}){
                 }}
               >
                 <View style={styles.button}>
-                  <Text style={{fontSize: 16, color: '#fff'}}>Cadastrar Reagentes</Text>
+                  <Text style={{fontSize: 16, color: '#fff'}}>Editar Dados</Text>
                 </View>
                 </TouchableOpacity>
               </View>
@@ -205,6 +231,49 @@ export default function EditarReagentes({route, navigation}){
               </View>
             </ScrollView>
             <TouchableOpacity onPress={() => {setModalVisibleRename(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
+                <Text style={{fontSize: 30}}>x</Text>
+            </TouchableOpacity>
+          </View>  
+        </View>
+      </Modal>
+      <Modal
+        visible={modalVisibleUpdate}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={styles.centermodal}>
+          <View style={styles.modal}>
+            <Text>Atualizar estoque</Text>
+            <Text style={styles.titleinput}>Qual a quantidade no estoque? </Text>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap:10}}>
+              <TextInput
+                value={quantidadeGeral}
+                onChangeText={setQuantidadeGeral}
+                keyboardType="numeric"
+                style={[styles.txtInput, {width: 100}]}
+                placeholder="Ex: 120"
+                placeholderTextColor='rgb(200, 200, 200)'
+              />
+              <Text>{unidade_medida_params}</Text>
+            </View>
+            <View style={{alignItems: 'center', width: '100%'}}>
+            <TouchableOpacity
+              onPress={()=>{
+                if (parseFloat(quantidadeGeral) > parseFloat(quantidade_unitario_params) * parseFloat(quantidade_frascos_params)) {
+                  Alert.alert('Atenção','A quantidade é muito superior do que o estipulado');
+                  return;
+                }
+                updateData_Update()
+                setModalVisibleUpdate(false);
+                  navigation.goBack();
+              }}
+            >
+              <View style={styles.button}>
+                <Text style={{fontSize: 16, color: '#fff'}}>Atualizar estoque</Text>
+              </View>
+            </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={() => {setModalVisibleUpdate(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
                 <Text style={{fontSize: 30}}>x</Text>
             </TouchableOpacity>
           </View>  

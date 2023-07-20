@@ -184,6 +184,7 @@ export default function CadastroReagentes( { navigation }){
             setNomeReagente('')
             setLote('')
             setQuantidadeUnitario('')
+            setSufixo('')
             setQuantidadeFrascos('')
             setValidade('')
             setLocalizacao('')
