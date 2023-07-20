@@ -62,18 +62,7 @@ export default function CadastroReagentes( { navigation }){
   }
 
   return(
-    <SafeAreaView>
-
-      <View style={styles.headerReagentes}>
-        <TouchableOpacity
-          onPress={()=>{navigation.goBack();}}>
-          <Image
-            source={require('../../assets/setanavigator.png')}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-        <Text style={styles.titleHeader}>Cadastrar reagente</Text>
-      </View>
+    <View>
       <ScrollView>
       <Text style={styles.titleinput}>Nome do reagente: </Text>
       <TextInput
@@ -198,7 +187,7 @@ export default function CadastroReagentes( { navigation }){
         <View style={{height: 100}}>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }
 

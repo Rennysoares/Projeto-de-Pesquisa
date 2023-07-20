@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 //Reagentes - Importações de telas
 import CadastroReagentes from './components/reagentes/CadastroReagentes';
@@ -21,17 +22,17 @@ import Validity from './components/Validade';
 import Graficos from './components/Graficos';
 
 const Drawer = createDrawerNavigator();
+const Bottom = createBottomTabNavigator()
 
 function NavReagentes({ navigation }){
   return(
-    <NavigationContainer independent={true}>
-        <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen 
+        <Bottom.Navigator initialRouteName="Home">
+        <Bottom.Screen 
         name="Home" 
         component={TelaReagentes}
         options={{
           title: 'Consultar Reagentes',
-          headerRight:()=>(
+          headerLeft:()=>(
             <TouchableOpacity
               onPress={()=>{navigation.goBack();}}>
               <Image
@@ -39,29 +40,38 @@ function NavReagentes({ navigation }){
                 style={styles.seta}
               />
             </TouchableOpacity>
-          )
+          ),
+          tabBarStyle:{height: 60}
         }}
         />
-        <Drawer.Screen 
+        <Bottom.Screen 
         name="CadastroReagentes" 
         component={CadastroReagentes}
-        options={{headerShown: false, title: 'Cadastrar reagentes'}}
+        options={{
+          title: 'Cadastrar reagentes', 
+          tabBarStyle:{height: 60},
+          headerLeft:()=>(
+            <TouchableOpacity
+              onPress={()=>{navigation.goBack();}}>
+              <Image
+                source={require('./assets/setanavigator.png')}
+                style={styles.seta}
+              />
+            </TouchableOpacity>
+          ),
+        }}
+        
         />
-        <Drawer.Screen 
+        <Bottom.Screen 
         name="EditarReagentes" 
         component={EditarReagentes}
         options={{
-          drawerItemStyle:{display: 'none'},
+          tabBarItemStyle:{display: 'none'},
+          tabBarStyle:{display: 'none'},
           headerShown: false
         }}
         />
-        <Drawer.Screen 
-        name="DeletarReagentes" 
-        component={DeletarReagentes}
-        options={{title: 'Deletar reagentes'}}
-        />
-      </Drawer.Navigator>
-    </NavigationContainer>
+      </Bottom.Navigator>
   )
 }
 
