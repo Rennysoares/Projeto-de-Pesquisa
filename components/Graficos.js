@@ -32,12 +32,11 @@ const Graficos = () => {
       <BarChart
         data={data}
         width={screenWidth}
-        height={200}
+        height={220}
         chartConfig={chartConfig}
         fromZero={true}
         style={{borderRadius: 10}}
       />
-
     </View>
   );
 };

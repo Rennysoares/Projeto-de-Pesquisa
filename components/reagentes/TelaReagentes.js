@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
 import { fetchDados } from './FetchDados';
 import { TextInput } from 'react-native-gesture-handler';
-
+import { AntDesign, Ionicons, Feather } from 'react-native-vector-icons';
 const dbreagent = DatabaseConnection.getConnectionDBReagent();
 
 const TelaReagentes = ({ navigation }) => {
@@ -68,7 +68,7 @@ const TelaReagentes = ({ navigation }) => {
 
       dbreagent.transaction(tx => {
         tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS lote (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, validade TEXT, quantidade_geral REAL, unidade_medida TEXT, localizacao TEXT, quantidade_frascos, quantidade_unitario)',
+          'CREATE TABLE IF NOT EXISTS lote (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, validade TEXT, quantidade_geral REAL, unidade_medida TEXT, localizacao TEXT, quantidade_frascos INTEGER, quantidade_unitario REAL)',
           [],
           () => {
             console.log('tabela lote criada com sucesso ou verificada se existe');
@@ -118,7 +118,9 @@ const TelaReagentes = ({ navigation }) => {
     <View style={styles.item}>
       
       <View>
-        <Text>Reagente: {item.nome}</Text>
+        <View style={{width: 250, overflow: 'hidden'}}>
+          <Text>Reagente: {item.nome}</Text>
+        </View>
         <Text>Quantidade Geral: {item.quantidade_geral + item.unidade_medida}</Text>
         <Text>Validade: {item.validade}</Text>
       </View>
@@ -157,6 +159,12 @@ const TelaReagentes = ({ navigation }) => {
         />
         </View>
       </View>
+      <TouchableOpacity
+        style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
+        onPress={()=>{navigation.navigate('CadastroReagentes')}}
+      >
+          <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
+      </TouchableOpacity>
         <Modal
           visible={modalVisible}
           transparent={true}
@@ -168,49 +176,64 @@ const TelaReagentes = ({ navigation }) => {
             <View style={{
               rowGap: 7
             }}>
-              <Text>Reagente: {selectedItem?.nome}</Text>
-              <Text>Lote: {selectedItem?.numero}</Text>
-              <Text>Quantidade de Frascos: {selectedItem?.quantidade_frascos}</Text>
-              <Text>Quantidade de cada Frasco: {selectedItem?.quantidade_unitario}</Text>
-              <Text>Quantidade Total: {selectedItem?.quantidade_geral + selectedItem?.unidade_medida}</Text>
-              <Text>Validade: {selectedItem?.validade}</Text>
-              <Text>Localização: {selectedItem?.localizacao}</Text>
+
+              <ScrollView style={{height: 350}}>
+              <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
+                <Image source={require("../../assets/reagenticon.png")} style={{height: 55, width: 55}}/>
+                <Text style={{fontSize: 18, width:190, fontWeight: 'bold'}}>{selectedItem?.nome}</Text>
+              </View>
+              <View style={{gap: 10}}>
+              <View>
+                <Text style={{fontSize: 16}}>Lote: </Text>
+                <Text style={{fontSize: 16}}>{selectedItem?.numero}</Text>
+              </View>
+
+              <View>
+                <Text style={{fontSize: 16}}>Quantidade de Frascos: </Text>
+                <Text style={{fontSize: 16}}>{selectedItem?.quantidade_frascos}</Text>
+              </View>
+
+              <View>
+                <Text style={{fontSize: 16}}>Quantidade Unitário: </Text>
+                <Text style={{fontSize: 16}}>{selectedItem?.quantidade_unitario + selectedItem?.unidade_medida}</Text>
+              </View>
+
+              <View>
+                <Text style={{fontSize: 16}}>Quantidade Total: </Text>
+                <Text style={{fontSize: 16}}>{selectedItem?.quantidade_geral + selectedItem?.unidade_medida}</Text>
+              </View>
+
+              <View>
+                <Text style={{fontSize: 16}}>Validade: </Text>
+                <Text style={{fontSize: 16}}>{selectedItem?.validade}</Text>
+              </View>
+
+              <View>
+                <Text style={{fontSize: 16}}>Localização: </Text>
+                <Text style={{fontSize: 16}}>{selectedItem?.localizacao}</Text>
+              </View>
+              </View>
+              </ScrollView>
             </View>
             <View style={{
               flexDirection: 'row',
               justifyContent: 'space-around',
+              alignItems: 'center',
+              height: 60
             }}>
               <TouchableOpacity
               onPress={()=>{setModalVisible(false);navigation.navigate('EditarReagentes', {selectedItem})}}
               >
-                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 255, 0)'}]}>
-                  {/*<Image
-                    source={require('../../assets/iconedit.png')}
-                    style={{
-                      height: 70,
-                      width: 70
-                    }}
-                  />*/}
-                  <Text style={styles.txtbuttonmodal} >Editar</Text>
-                </View>
+                <Feather name='edit' size={37} color={'rgb(0, 0, 0)'}/>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={()=>{setModalVisible2(true); setModalVisible(false)}}>
-                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 0, 0)'}]}>
-                {/*<Image
-                    source={require('../../assets/icondelete.png')}
-                    style={{
-                      height: 70,
-                      width: 70
-                    }}
-                  />*/}
-                  <Text style={styles.txtbuttonmodal}>Apagar</Text>
-                </View>
+                <AntDesign name='delete' size={37} color={'rgb(240, 10, 10)'}/>
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity onPress={() => {setModalVisible(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
-                <Text style={{fontSize: 30}}>x</Text>
+            <TouchableOpacity onPress={() => {setModalVisible(false)}} style={{position: 'absolute', top: 0, right: 0, padding: 5}}>
+                <Ionicons name='close' size={30} color={'rgb(0, 0, 0)'}/>
             </TouchableOpacity>
           </View>
         </View>
@@ -242,6 +265,7 @@ const TelaReagentes = ({ navigation }) => {
           </View>  
         </View>
         </Modal>
+
     </View>
   );
 };
@@ -289,11 +313,10 @@ const styles = StyleSheet.create({
   modal:{
     backgroundColor: 'rgb(255, 255, 255)',
     padding: 20,
-    height: '50%',
-    width: '75%',
-    borderRadius: 15,
+    height: 450,
+    width: '80%',
+    borderRadius: 10,
     rowGap: 5,
-    justifyContent: 'space-evenly'
   },
   buttonmodal:{
     borderRadius: 10,

@@ -28,7 +28,7 @@ export default function CadastroReagentes( { navigation }){
   const[sufixo, setSufixo] = useState();
   const[quantidadeFrascos, setQuantidadeFrascos] = useState('')
   const[quantidadeCalculada, setQuantidadeCalculada] = useState('')
-
+  
   useEffect(()=>{
     setQuantidadeCalculada(parseFloat(quantidadeFrascos)*parseFloat(quantidadeUnitario))
   })
@@ -92,6 +92,7 @@ export default function CadastroReagentes( { navigation }){
           value={quantidadeUnitario}
           onChangeText={setQuantidadeUnitario}
           keyboardType="numeric"
+          maxLength={4}
           style={[styles.txtInput, {width: 100}]}
           placeholder="Ex: 120"
           placeholderTextColor='rgb(200, 200, 200)'
@@ -104,6 +105,7 @@ export default function CadastroReagentes( { navigation }){
           style={[styles.txtInput, {width: 100}]}
           autoCapitalize="none"
           placeholder="Ex: ml"
+          maxLength={8}
           placeholderTextColor='rgb(200, 200, 200)'
         />
         </View>
@@ -156,12 +158,20 @@ export default function CadastroReagentes( { navigation }){
               Alert.alert('Atenção','Por favor preencha a quantidade de cada frascos');
               return;
             }
+            if(quantidadeUnitario == 0 || quantidadeUnitario < 0){
+              Alert.alert('Atenção','Por favor preencha a quantidade de cada frasco corretamente');
+              return;
+            }
             if(!sufixo){
               Alert.alert('Atenção','Por favor preencha a unidade de medida');
               return;
             }
             if(!quantidadeFrascos){
               Alert.alert('Atenção','Por favor preencha a quantidade de frascos');
+              return;
+            }
+            if(quantidadeFrascos == 0 || quantidadeFrascos < 0){
+              Alert.alert('Atenção','Por favor preencha a quantidade de frascos corretamente');
               return;
             }
             if(!validade){

@@ -7,27 +7,30 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 //Importações para a navegação - React Navigation
 import { NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 //Reagentes - Importações de telas
+import TelaReagentes from './components/reagentes/TelaReagentes';
 import CadastroReagentes from './components/reagentes/CadastroReagentes';
 import EditarReagentes from './components/reagentes/EditarReagentes';
-import DeletarReagentes from './components/reagentes/DeletarReagentes';
-import TelaReagentes from './components/reagentes/TelaReagentes';
+
+//Vidrarias - Importação de telas
+import TelaVidrarias from './components/vidrarias/TelaVidrarias';
+import CadastroVidrarias from './components/vidrarias/CadastroVidrarias';
 
 //Card personalizado
 import CardProduct from './components/CardProduct';
 import Validity from './components/Validade';
 import Graficos from './components/Graficos';
 
-const Drawer = createDrawerNavigator();
-const Bottom = createBottomTabNavigator()
+const StackMain = createStackNavigator();
+const StackReagents = createStackNavigator();
+const StackGlasswares = createBottomTabNavigator();
 
 function NavReagentes({ navigation }){
   return(
-        <Bottom.Navigator initialRouteName="Home">
-        <Bottom.Screen 
+        <StackReagents.Navigator initialRouteName="Home">
+        <StackReagents.Screen 
         name="Home" 
         component={TelaReagentes}
         options={{
@@ -41,12 +44,47 @@ function NavReagentes({ navigation }){
               />
             </TouchableOpacity>
           ),
-          tabBarStyle:{height: 60}
         }}
         />
-        <Bottom.Screen 
+        <StackReagents.Screen 
         name="CadastroReagentes" 
         component={CadastroReagentes}
+        options={{
+          title: 'Cadastrar reagentes', 
+        }}
+        
+        />
+        <StackReagents.Screen 
+        name="EditarReagentes" 
+        component={EditarReagentes}
+        />
+      </StackReagents.Navigator>
+  )
+}
+
+function NavVidrarias({navigation}){
+  return(
+    <StackGlasswares.Navigator>
+      <StackGlasswares.Screen
+        name="Home" 
+        component={TelaVidrarias}
+        options={{
+          title: 'Consultar Vidrarias',
+          headerLeft:()=>(
+            <TouchableOpacity
+              onPress={()=>{navigation.goBack();}}>
+              <Image
+                source={require('./assets/setanavigator.png')}
+                style={styles.seta}
+              />
+            </TouchableOpacity>
+          ),
+          tabBarStyle:{height: 60}
+        }}
+      />
+      <StackGlasswares.Screen
+        name="CadastroVidrarias" 
+        component={CadastroVidrarias}
         options={{
           title: 'Cadastrar reagentes', 
           tabBarStyle:{height: 60},
@@ -60,22 +98,10 @@ function NavReagentes({ navigation }){
             </TouchableOpacity>
           ),
         }}
-        
-        />
-        <Bottom.Screen 
-        name="EditarReagentes" 
-        component={EditarReagentes}
-        options={{
-          tabBarItemStyle:{display: 'none'},
-          tabBarStyle:{display: 'none'},
-          headerShown: false
-        }}
-        />
-      </Bottom.Navigator>
+      />
+    </StackGlasswares.Navigator>
   )
 }
-
-const Pilha = createStackNavigator();
 
 function TelaHome( { navigation }){
 
@@ -114,8 +140,8 @@ function TelaHome( { navigation }){
             />
             <CardProduct
             tipoProduto="Vidrarias"
-            //navigation={navigation}
-            //teladenav = 'TextNav'
+            navigation={navigation}
+            teladenav = 'NavVidrarias'
             src={require('./assets/iconstypeitem/glassware.png')}
             />
             <CardProduct
@@ -142,18 +168,23 @@ function TelaHome( { navigation }){
 export default function App() {
   return (
     <NavigationContainer>
-      <Pilha.Navigator>
-        <Pilha.Screen
+      <StackMain.Navigator>
+        <StackMain.Screen
         name="TelaHome"
         component={TelaHome}
         options={{headerShown: false}}
        />
-       <Pilha.Screen
+       <StackMain.Screen
         name="NavReagentes"
         component={NavReagentes}
         options={{headerShown: false}}
        />
-      </Pilha.Navigator>
+       <StackMain.Screen
+        name="NavVidrarias"
+        component={NavVidrarias}
+        options={{headerShown: false}}
+       />
+      </StackMain.Navigator>
     </NavigationContainer>
   );
 }
@@ -212,7 +243,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   conteinerGraficos:{
-    height: 400,
     alignItems: 'center'
   }
 });

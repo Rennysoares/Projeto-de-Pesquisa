@@ -2,7 +2,7 @@ import React ,{ useState, useEffect} from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Image, Modal, Button, ScrollView, Switch, TextInput, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaskedTextInput } from 'react-native-mask-text';
-
+import { Ionicons } from 'react-native-vector-icons';
 import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
 const dbreagent = DatabaseConnection.getConnectionDBReagent();
 
@@ -10,6 +10,7 @@ export default function EditarReagentes({route, navigation}){
 
   const [modalVisibleRename, setModalVisibleRename] = useState(false);
   const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
+  const [modalVisibleAdd, setModalVisibleAdd] = useState(false)
 
   //Dados passados por parâmetros (dados qualitativos)
   const id_params = route.params.selectedItem?.id
@@ -34,7 +35,9 @@ export default function EditarReagentes({route, navigation}){
   const[quantidadeUnitario, setQuantidadeUnitario] = useState('')
   const[quantidadeFrascos, setQuantidadeFrascos] = useState('')
   const[quantidadeGeral, setQuantidadeGeral] = useState('')
+  const[quantidadeFrascosAdicionais, setQuantidadeFrascosAdicionais] = useState('');
 
+  
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
     });
@@ -51,6 +54,7 @@ export default function EditarReagentes({route, navigation}){
   function setUpdateQtdeGeral(){
     setQuantidadeGeral(''+quantidade_geral_params)
   }
+
   function updateData_Rename(){
     console.log('Nome: ' + nomeReagente + ' Lote: ' +  lote + ' Validade: ' + validade + ' Localização: ' + localizacao)
     dbreagent.transaction((tx) => {
@@ -104,31 +108,38 @@ export default function EditarReagentes({route, navigation}){
     
   }
 
+  function updateData_Add(){
+    dbreagent.transaction((tx) => {
+      tx.executeSql(
+        'UPDATE lote SET quantidade_geral = ?, quantidade_frascos = ? WHERE id = ?;',
+        [parseFloat(quantidade_geral_params) + (parseFloat(quantidadeFrascosAdicionais)*parseFloat(quantidade_unitario_params)), 
+          parseInt(quantidade_frascos_params) + parseInt(quantidadeFrascosAdicionais), 
+          id_params],
+        (_, result) => {
+          console.log('Estoque atualizado com sucesso!')
+          Alert.alert('Sucesso','Estoque atualizado com com sucesso');
+        },
+        (_, error) => {
+          console.error('Erro na atualização da Tabela lote:', error);
+          Alert.alert('Erro','Erro na atualização da Tabela lote (consulte o desenvolvedor): '+ error);
+          return false;
+        }
+      );
+    });
+  }
   return(
-    <SafeAreaView>
-      <View style={styles.headerReagentes}>
-        <TouchableOpacity
-          onPress={()=>{navigation.goBack();}}>
-          <Image
-            source={require('../../assets/setanavigator.png')}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-        <Text style={styles.titleHeader}>Editar reagente</Text>
-      </View>
-
-      <Text style={{textAlign: 'center'}}>Reagente: {nome_params}</Text>
-      <Text>Id: {id_params}</Text>
-      <Text>Lote: {lote_params}</Text>
-      <Text>Validade: {validade_params}</Text>
-      <Text>Localização: {localizacao_params}</Text>
-
-      <View style={{alignItems: 'center', gap: 20}}>
+    <View>
+      <ScrollView>
+      <View style={{alignItems: 'center', gap: 20, flexDirection: 'row', paddingVertical: 20, paddingHorizontal: 10,flexWrap: 'wrap', justifyContent: 'center'}}>
         <TouchableOpacity
           onPress={()=>{setModalVisibleRename(true); setAllDatas()}}
         >
           <View style={styles.button}>
-            <Text style={{fontSize: 16, color: '#fff'}}>Editar Dados</Text>
+            <Image
+                source={require("../../assets/iconedit2.png")}
+                style={{height: 70, width: 70}}
+            />
+            <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Editar Dados</Text>
           </View>
         </TouchableOpacity>
 
@@ -136,20 +147,65 @@ export default function EditarReagentes({route, navigation}){
           onPress={()=>{setModalVisibleUpdate(true); setUpdateQtdeGeral()}}
         >
           <View style={styles.button}>
-            <Text style={{fontSize: 16, color: '#fff'}}>Atualizar estoque</Text>
+          <Image
+                source={require("../../assets/update.png")}
+                style={{height: 70, width: 70}}
+            />
+            <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Atualizar estoque</Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=>{setModalVisibleAdd(true)}}
+        >
           <View style={styles.button}>
-            <Text style={{fontSize: 16, color: '#fff'}}>Adicionar Frascos</Text>
+          <Image
+                source={require("../../assets/addreagent.png")}
+                style={{height: 70, width: 70}}
+            />
+            <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Adicionar Frascos</Text>
           </View>
         </TouchableOpacity>
-
-        <Button title='Consultar Dados' onPress={()=>{console.log(route.params.selectedItem)}}/>
-        <Button title='Consultar Dados' onPress={()=>{console.log(quantidade_geral_params)}}/>
       </View>
+      <View style={{gap: 10, padding: 10, borderColor: '#000', borderWidth: 1, margin: 10}}>
+        <Text style={{fontSize: 16, textAlign: 'center'}}>Informações do Reagente</Text>
 
+        <View>
+          <Text style={{fontSize: 16}}>Nome: </Text>
+          <Text style={{fontSize: 16}}>{nome_params}</Text>
+        </View>
+
+        <View>
+          <Text style={{fontSize: 16}}>Lote: </Text>
+          <Text style={{fontSize: 16}}>{lote_params}</Text>
+        </View>
+
+        <View>
+          <Text style={{fontSize: 16}}>Quantidade de Frascos: </Text>
+          <Text style={{fontSize: 16}}>{quantidade_frascos_params}</Text>
+        </View>
+
+        <View>
+          <Text style={{fontSize: 16}}>Quantidade Unitário: </Text>
+          <Text style={{fontSize: 16}}>{quantidade_unitario_params}</Text>
+        </View>
+
+        <View>
+          <Text style={{fontSize: 16}}>Quantidade Total: </Text>
+          <Text style={{fontSize: 16}}>{quantidade_geral_params + unidade_medida_params}</Text>
+        </View>
+
+        <View>
+          <Text style={{fontSize: 16}}>Validade: </Text>
+          <Text style={{fontSize: 16}}>{validade_params}</Text>
+        </View>
+
+        <View>
+          <Text style={{fontSize: 16}}>Localização: </Text>
+          <Text style={{fontSize: 16}}>{localizacao_params}</Text>
+        </View>
+      </View>
+      </ScrollView>
       <Modal
           visible={modalVisibleRename}
           transparent={true}
@@ -217,21 +273,19 @@ export default function EditarReagentes({route, navigation}){
                     return;
                   }
                   updateData_Rename()
-                  Alert.alert('Sucesso','Dados com sucesso');
+                  Alert.alert('Sucesso','Dados editados com sucesso');
                   setModalVisibleRename(false)
                   navigation.goBack();
                 }}
               >
-                <View style={styles.button}>
+                <View style={styles.buttonModal}>
                   <Text style={{fontSize: 16, color: '#fff'}}>Editar Dados</Text>
                 </View>
                 </TouchableOpacity>
               </View>
-              <View style={{height: 100}}>
-              </View>
             </ScrollView>
-            <TouchableOpacity onPress={() => {setModalVisibleRename(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
-                <Text style={{fontSize: 30}}>x</Text>
+            <TouchableOpacity onPress={() => {setModalVisibleRename(false)}} style={{position: 'absolute', top: 0, right: 0, padding: 5}}>
+              <Ionicons name='close' size={30} color={'rgb(0, 0, 0)'}/>
             </TouchableOpacity>
           </View>  
         </View>
@@ -263,23 +317,75 @@ export default function EditarReagentes({route, navigation}){
                   Alert.alert('Atenção','A quantidade é muito superior do que o estipulado');
                   return;
                 }
+                if (parseFloat(quantidadeGeral) < 0){
+                  Alert.alert('Atenção','Insira a quantidade geral corretamente');
+                  return;
+                }
                 updateData_Update()
                 setModalVisibleUpdate(false);
-                  navigation.goBack();
+                navigation.goBack();
+                
               }}
             >
-              <View style={styles.button}>
+              <View style={styles.buttonModal}>
                 <Text style={{fontSize: 16, color: '#fff'}}>Atualizar estoque</Text>
               </View>
             </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => {setModalVisibleUpdate(false)}} style={{position: 'absolute', top: -9, right: 7, padding: 5}}>
-                <Text style={{fontSize: 30}}>x</Text>
+            <TouchableOpacity onPress={() => {setModalVisibleUpdate(false)}} style={{position: 'absolute', top: 0, right: 0, padding: 5}}>
+              <Ionicons name='close' size={30} color={'rgb(0, 0, 0)'}/>
             </TouchableOpacity>
           </View>  
         </View>
       </Modal>
-    </SafeAreaView>
+      <Modal
+        visible={modalVisibleAdd}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={styles.centermodal}>
+          <View style={styles.modal}>
+            <Text>Adicionar Frascos</Text>
+            <Text style={styles.titleinput}>Quantos frascos serão adicionados? </Text>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+              <TextInput
+                value={quantidadeFrascosAdicionais}
+                onChangeText={setQuantidadeFrascosAdicionais}
+                keyboardType="numeric"
+                maxLength={3}
+                style={[styles.txtInput, {width: '100%'}]}
+                placeholder="Ex: 2"
+                placeholderTextColor='rgb(200, 200, 200)'
+              />
+            </View>
+            <View style={{alignItems: 'center', width: '100%'}}>
+            <TouchableOpacity
+              onPress={()=>{
+                if(!quantidadeFrascosAdicionais){
+                  Alert.alert('Atenção','Insira a quantidade de frascos adicionais');
+                  return;
+                }
+                if(quantidadeFrascosAdicionais == 0){
+                  Alert.alert('Atenção','Insira a quantidade de frascos adicionais');
+                  return;
+                }
+                updateData_Add()
+                setModalVisibleAdd(false);
+                navigation.goBack();
+              }}
+            >
+              <View style={styles.buttonModal}>
+                <Text style={{fontSize: 16, color: '#fff'}}>Adicionar Frascos</Text>
+              </View>
+            </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={() => {setModalVisibleAdd(false)}} style={{position: 'absolute', top: 0, right: 0, padding: 5}}>
+              <Ionicons name='close' size={30} color={'rgb(0, 0, 0)'}/>
+            </TouchableOpacity>
+          </View>  
+        </View>
+      </Modal>
+    </View>
   )
 }
 
@@ -308,12 +414,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   button:{
-    height:45,
-    width: 230,
+    height:120,
+    width: 120,
     backgroundColor: 'rgb(0, 140, 255)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10
+    borderRadius: 10,
   },
   centermodal:{
     height: '100%',
@@ -325,10 +431,19 @@ const styles = StyleSheet.create({
   modal:{
     backgroundColor: 'rgb(245, 245, 245)',
     padding: 20,
-    height: '50%',
+    height: 350,
     width: '75%',
     borderRadius: 15,
     rowGap: 5,
   },
+  buttonModal:{
+    height:45,
+    width: 230,
+    backgroundColor: 'rgb(0, 140, 255)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    marginVertical: 20
+  }
 });
 
