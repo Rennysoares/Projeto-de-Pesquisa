@@ -12,5 +12,4 @@ const TelaEquipamentos = ({navigation}) =>{
         </View>
     )
 }
-
 export default TelaEquipamentos;
