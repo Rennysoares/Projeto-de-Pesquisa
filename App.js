@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 //Importações para a navegação - React Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 //Reagentes - Importações de telas
 import TelaReagentes from './components/reagentes/TelaReagentes';
@@ -24,8 +25,9 @@ import TelaEquipamentos from './components/equipamentos/TelaEquipamentos';
 import CardProduct from './components/CardProduct';
 import Validity from './components/Validade';
 import Graficos from './components/Graficos';
+import DrawerApp from './components/DrawerApp';
 
-const StackMain = createStackNavigator();
+const StackMain = createDrawerNavigator();
 
 const StackReagents = createStackNavigator();
 const StackGlasswares = createStackNavigator();
@@ -121,7 +123,7 @@ function NavEquipamentos({navigation}){
 function TelaHome( { navigation }){
 
   return(
-    <SafeAreaView>
+    <View>
       <ScrollView>
       <View style={styles.conteinerHeader}>
         <LinearGradient
@@ -176,18 +178,18 @@ function TelaHome( { navigation }){
         <Graficos/>
       </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }
 
 export default function App() {
   return (
     <NavigationContainer>
-      <StackMain.Navigator>
+      <StackMain.Navigator drawerContent={(props) => <DrawerApp {...props} />}>
         <StackMain.Screen
         name="TelaHome"
         component={TelaHome}
-        /*options={{
+        options={{
           title: "Tela inicial",
           headerStyle: {
             backgroundColor: 'rgb(0, 210, 0)',
@@ -199,8 +201,7 @@ export default function App() {
           headerTitleStyle: {
             fontWeight: 'bold'
           },
-        }}*/
-        options={{headerShown: false}}
+        }}
        />
        <StackMain.Screen
         name="NavReagentes"
