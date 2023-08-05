@@ -10,11 +10,34 @@ const dbglassware = DatabaseConnection.getConnectionDBGlassware();
 
 const TelaVidrarias = ({ navigation }) => {
   const [isDatabaseReady, setDatabaseReady] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [modalVisible2, setModalVisible2] = useState(false);
+  const [modalEdit, setModalEdit] = useState(false)
 
+  const handleShowModal = (iditem) =>{
+    setModalVisible2(true)
+    setSelectedItem(iditem)
+  }
+  const handleShowModalEdit = () =>{
+    setModalEdit(true)
+  }
   const deleteItem = (iditem) =>{
-    console.log(iditem)
+    dbglassware.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM Capacidades WHERE id = ?',
+        [iditem],
+        () => {
+          console.log('Item deletado com sucesso!');
+        },
+        error => {
+          console.log('Erro ao deletar item:', error);
+        }
+      );
+    });
+
+    fetchDados(setData, dbglassware, setFilteredData);
   }
   const handleSearch = (text) => {
     const filteredItems = data.filter((item) => {
@@ -65,7 +88,6 @@ const TelaVidrarias = ({ navigation }) => {
 
     createTables();
   }, []);
-
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       console.log('A tela principal foi ativada');
@@ -80,13 +102,16 @@ const TelaVidrarias = ({ navigation }) => {
     <View style={styles.itemContainer}>
       <View>
         <Text style={styles.itemNome}>{item.nome}</Text>
-        <Text style={styles.itemDescricao}>{item.descricao}</Text>
-        <Text style={styles.itemQuantidade}>{`Quantidade: ${item.quantidade}`}</Text>
         <Text style={styles.itemQuantidade}>{item.capacidade}</Text>
+        <Text style={styles.itemQuantidade}>{`Quantidade: ${item.quantidade}`} unidades</Text>
+        <Text style={styles.itemDescricao}>{item.descricao}</Text>
       </View>
 
-      <View>
-        <TouchableOpacity onPress={()=>{deleteItem(item.idcapacidades)}}>
+      <View style={{flexDirection: 'row', gap: 10}}>
+        <TouchableOpacity onPress={()=>{handleShowModalEdit()}}>
+          <Feather name='edit' size={37} color={'rgb(0, 0, 0)'}/>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>{handleShowModal(item)}}>
           <AntDesign name='delete' size={37} color={'rgb(240, 10, 10)'}/>
         </TouchableOpacity>
       </View>
@@ -105,11 +130,60 @@ const TelaVidrarias = ({ navigation }) => {
             padding:10
           }}
         />
+        <View style={{height: '93%' }}>
         <FlatList
           data={filteredData}
           renderItem={renderVidrariaItem}
           keyExtractor={(_, item) => item.toString()}
         />
+        </View>
+        <Modal
+          visible={modalVisible2}
+          transparent={true}
+          animationType="fade"
+        >
+        <View style={styles.centermodal}>
+          <View style={styles.modal2}>
+            <Text style={{textAlign: 'center'}}>Tem certeza?</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+              <TouchableOpacity
+                onPress={()=>{deleteItem(selectedItem.idcapacidades); setModalVisible2(false)}}
+              >
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(0, 255, 0 )'}]}>
+                <Text>Sim</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+              onPress={()=>{setModalVisible2(false);}}
+              >
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 0, 0 )'}]}>
+                <Text>Não</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>  
+        </View>
+        </Modal>
+        <Modal
+          visible={modalEdit}
+          transparent={true}
+          animationType="fade"
+        >
+          <View style={styles.centermodal}>
+          <View style={styles.modal2}>
+            <Text>Teste</Text>
+            <TouchableOpacity onPress={() => {setModalEdit(false)}} style={{position: 'absolute', top: 0, right: 0, padding: 5}}>
+                <Ionicons name='close' size={30} color={'rgb(0, 0, 0)'}/>
+            </TouchableOpacity>
+          </View>
+          </View>
+        </Modal>
+        <TouchableOpacity
+        style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
+        onPress={()=>{navigation.navigate('CadastroVidrarias')}}
+          >
+          <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
+        </TouchableOpacity>
     </View>
   );
 };
@@ -137,13 +211,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   itemDescricao: {
-    fontSize: 16,
+    fontSize: 14,
   },
   itemQuantidade: {
     fontSize: 14,
   },
   itemCapacidade: {
     fontSize: 14,
+  },
+  centermodal:{
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+  modal2:{
+    backgroundColor: 'rgb(255, 255, 255)',
+    padding: 20,
+    height: '25%',
+    width: '75%',
+    borderRadius: 15,
+    rowGap: 5,
+    justifyContent: 'space-around'
+  },
+  buttonmodal:{
+    borderRadius: 10,
+    height: 40,
+    width: 90,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 });
 

@@ -150,7 +150,7 @@ const TelaReagentes = ({ navigation }) => {
             padding:10
           }}
         />
-        <View style={{height: '90%' }}>
+        <View style={{height: '93%' }}>
         <FlatList
           data={filteredData}
           extraData={data}

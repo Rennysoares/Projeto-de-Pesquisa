@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, Alert } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
@@ -11,7 +11,7 @@ const dbglassware = DatabaseConnection.getConnectionDBGlassware();
 const CadastroVidrarias = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
-  const [capacidades, setCapacidades] = useState([]);
+  const [capacidades, setCapacidades] = useState([{ capacidade: '', quantidade: '' }]);
 
   const adicionarCapacidade = () => {
     setCapacidades([...capacidades, { capacidade: '', quantidade: '' }]);
@@ -55,7 +55,7 @@ const CadastroVidrarias = () => {
       );
     });
 
-    // Resto do código para redirecionar para outra tela ou exibir uma mensagem de sucesso
+    Alert.alert('Sucesso', 'Cadastrado com sucesso');
   };
 
   const renderCapacidadeItem = ({ item, index }) => {
@@ -91,12 +91,12 @@ const CadastroVidrarias = () => {
         placeholder="Digite o nome da vidraria"
       />
 
-      <Text style={styles.titleinput}>Descrição:</Text>
+      <Text style={styles.titleinput}>Localização:</Text>
       <TextInput
         style={styles.input}
         value={descricao}
         onChangeText={setDescricao}
-        placeholder="Digite a descrição da vidraria"
+        placeholder="Digite a localização da vidraria"
         multiline
       />
 
@@ -142,22 +142,19 @@ const styles = StyleSheet.create({
   capacidadeItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
   },
   capacidadeInput: {
     flex: 2,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    padding: 7,
     borderRadius: 5,
-    padding: 10,
+    backgroundColor: 'rgb(255, 255, 255)'
   },
   quantidadeInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    margin: 10,
+    padding: 7,
     borderRadius: 5,
-    padding: 10,
-    marginLeft: 10,
+    backgroundColor: 'rgb(255, 255, 255)'
   },
   removerCapacidade: {
     color: 'red',

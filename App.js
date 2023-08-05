@@ -1,13 +1,12 @@
 //Importações dos Core Components do React e do React Native
 import { React, useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Image, ScrollView, Button, BackHandler, TouchableOpacity} from 'react-native';
+import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 //Importações para a navegação - React Navigation
-import { NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 //Reagentes - Importações de telas
 import TelaReagentes from './components/reagentes/TelaReagentes';
@@ -18,47 +17,52 @@ import EditarReagentes from './components/reagentes/EditarReagentes';
 import TelaVidrarias from './components/vidrarias/TelaVidrarias';
 import CadastroVidrarias from './components/vidrarias/CadastroVidrarias';
 
+//Equipamentos - Importação de telas
+import TelaEquipamentos from './components/equipamentos/TelaEquipamentos';
+
 //Card personalizado
 import CardProduct from './components/CardProduct';
 import Validity from './components/Validade';
 import Graficos from './components/Graficos';
 
 const StackMain = createStackNavigator();
+
 const StackReagents = createStackNavigator();
-const StackGlasswares = createBottomTabNavigator();
+const StackGlasswares = createStackNavigator();
+const StackEquipments = createStackNavigator();
 
 function NavReagentes({ navigation }){
   return(
-        <StackReagents.Navigator initialRouteName="Home">
-        <StackReagents.Screen 
-        name="Home" 
-        component={TelaReagentes}
-        options={{
-          title: 'Consultar Reagentes',
-          headerLeft:()=>(
-            <TouchableOpacity
-              onPress={()=>{navigation.goBack();}}>
-              <Image
-                source={require('./assets/setanavigator.png')}
-                style={styles.seta}
-              />
-            </TouchableOpacity>
-          ),
-        }}
-        />
-        <StackReagents.Screen 
-        name="CadastroReagentes" 
-        component={CadastroReagentes}
-        options={{
-          title: 'Cadastrar reagentes', 
-        }}
-        
-        />
-        <StackReagents.Screen 
-        name="EditarReagentes" 
-        component={EditarReagentes}
-        />
-      </StackReagents.Navigator>
+      <StackReagents.Navigator initialRouteName="Home">
+      <StackReagents.Screen 
+      name="Home" 
+      component={TelaReagentes}
+      options={{
+        title: 'Consultar Reagentes',
+        headerLeft:()=>(
+          <TouchableOpacity
+            onPress={()=>{navigation.goBack();}}>
+            <Image
+              source={require('./assets/setanavigator.png')}
+              style={styles.seta}
+            />
+          </TouchableOpacity>
+        ),
+      }}
+      />
+      <StackReagents.Screen 
+      name="CadastroReagentes" 
+      component={CadastroReagentes}
+      options={{
+        title: 'Cadastrar reagentes', 
+      }}
+      
+      />
+      <StackReagents.Screen 
+      name="EditarReagentes" 
+      component={EditarReagentes}
+      />
+    </StackReagents.Navigator>
   )
 }
 
@@ -79,30 +83,41 @@ function NavVidrarias({navigation}){
               />
             </TouchableOpacity>
           ),
-          tabBarStyle:{height: 60}
         }}
       />
       <StackGlasswares.Screen
         name="CadastroVidrarias" 
         component={CadastroVidrarias}
         options={{
-          title: 'Cadastrar reagentes', 
-          tabBarStyle:{height: 60},
-          headerLeft:()=>(
-            <TouchableOpacity
-              onPress={()=>{navigation.goBack();}}>
-              <Image
-                source={require('./assets/setanavigator.png')}
-                style={styles.seta}
-              />
-            </TouchableOpacity>
-          ),
+          title: 'Cadastrar reagentes',
         }}
       />
     </StackGlasswares.Navigator>
   )
 }
 
+function NavEquipamentos({navigation}){
+  return (
+  <StackEquipments.Navigator initialRouteName="Home">
+    <StackEquipments.Screen
+      name="Home"
+      component={TelaEquipamentos}
+      options={{
+        title: 'Consultar Equipamentos',
+        headerLeft:()=>(
+          <TouchableOpacity
+            onPress={()=>{navigation.goBack();}}>
+            <Image
+              source={require('./assets/setanavigator.png')}
+              style={styles.seta}
+            />
+          </TouchableOpacity>
+        ),
+      }}
+    />
+  </StackEquipments.Navigator>
+  )
+}
 function TelaHome( { navigation }){
 
   return(
@@ -110,7 +125,7 @@ function TelaHome( { navigation }){
       <ScrollView>
       <View style={styles.conteinerHeader}>
         <LinearGradient
-        colors={['rgb(255, 255, 255)', 'rgb(0, 255, 0)']}
+        colors={['rgb(255, 255, 255)', 'rgb(0, 210, 0)']}
         start={{x: 0, y: 0}}
         end={{x: 0.5, y: 0.5}}
         style={styles.linearGradient}
@@ -146,8 +161,8 @@ function TelaHome( { navigation }){
             />
             <CardProduct
             tipoProduto="Equipamentos"
-            //navigation={navigation}
-            //teladenav = 'TextNav'
+            navigation={navigation}
+            teladenav = 'NavEquipamentos'
             src={require('./assets/iconstypeitem/equipment.png')}
             />
           </ScrollView>
@@ -172,6 +187,19 @@ export default function App() {
         <StackMain.Screen
         name="TelaHome"
         component={TelaHome}
+        /*options={{
+          title: "Tela inicial",
+          headerStyle: {
+            backgroundColor: 'rgb(0, 210, 0)',
+            shadowRadius: 30,
+            shadowColor: '#000',
+            shadowOpacity: 0.8,
+          },
+          headerTintColor: '#000',
+          headerTitleStyle: {
+            fontWeight: 'bold'
+          },
+        }}*/
         options={{headerShown: false}}
        />
        <StackMain.Screen
@@ -182,6 +210,11 @@ export default function App() {
        <StackMain.Screen
         name="NavVidrarias"
         component={NavVidrarias}
+        options={{headerShown: false}}
+       />
+       <StackMain.Screen
+        name="NavEquipamentos"
+        component={NavEquipamentos}
         options={{headerShown: false}}
        />
       </StackMain.Navigator>

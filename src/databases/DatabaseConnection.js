@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 
-//Conexão ao banco de dados
+//Conexões - banco de dados
 
 export const DatabaseConnection = {
     getConnectionDBReagent: () => SQLite.openDatabase("dbreagent.db"),
