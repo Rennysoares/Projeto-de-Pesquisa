@@ -3,6 +3,7 @@ import { React, useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Entypo, Ionicons, Feather } from 'react-native-vector-icons';
 
 //Importações para a navegação - React Navigation
 import { NavigationContainer } from '@react-navigation/native';
@@ -27,8 +28,8 @@ import Validity from './components/Validade';
 import Graficos from './components/Graficos';
 import DrawerApp from './components/DrawerApp';
 
+//Criação de pilhas
 const StackMain = createDrawerNavigator();
-
 const StackReagents = createStackNavigator();
 const StackGlasswares = createStackNavigator();
 const StackEquipments = createStackNavigator();
@@ -91,7 +92,7 @@ function NavVidrarias({navigation}){
         name="CadastroVidrarias" 
         component={CadastroVidrarias}
         options={{
-          title: 'Cadastrar reagentes',
+          title: 'Cadastrar Vidrarias',
         }}
       />
     </StackGlasswares.Navigator>
@@ -127,7 +128,7 @@ function TelaHome( { navigation }){
       <ScrollView>
       <View style={styles.conteinerHeader}>
         <LinearGradient
-        colors={['rgb(255, 255, 255)', 'rgb(0, 210, 0)']}
+        colors={['rgb(255, 255, 255)', "#54f000"]}
         start={{x: 0, y: 0}}
         end={{x: 0.5, y: 0.5}}
         style={styles.linearGradient}
@@ -182,41 +183,88 @@ function TelaHome( { navigation }){
   )
 }
 
+
+function Settings(){
+  return <><Text>Settings</Text></>
+}
+
 export default function App() {
   return (
     <NavigationContainer>
-      <StackMain.Navigator drawerContent={(props) => <DrawerApp {...props} />}>
+      <StackMain.Navigator 
+        drawerContent={(props) => <DrawerApp {...props}
+      />}>
         <StackMain.Screen
         name="TelaHome"
         component={TelaHome}
         options={{
           title: "Tela inicial",
           headerStyle: {
-            backgroundColor: 'rgb(0, 210, 0)',
+            backgroundColor: "#54F000",
             shadowRadius: 30,
             shadowColor: '#000',
-            shadowOpacity: 0.8,
           },
           headerTintColor: '#000',
           headerTitleStyle: {
             fontWeight: 'bold'
           },
+          headerRight: ()=>(
+            <View style={{padding: 10}}>
+              <Feather name='help-circle' size={22} color='#000'/>
+            </View>
+          ),
+          drawerIcon: ({color})=>(<Entypo name='home' size={22} color={color}/>),
+          drawerLabelStyle:{marginLeft: -20},
+          drawerActiveTintColor: "#FFF",
+          drawerActiveBackgroundColor: "#54B000"
         }}
        />
        <StackMain.Screen
         name="NavReagentes"
         component={NavReagentes}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          title: 'Reagentes', 
+          drawerIcon: ({color})=>(<Entypo name='list' size={22} color={color}/>),
+          drawerLabelStyle:{marginLeft: -20},
+          drawerActiveTintColor: "#FFF",
+          drawerActiveBackgroundColor: "#54B000"
+        }}
        />
        <StackMain.Screen
         name="NavVidrarias"
         component={NavVidrarias}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          title: 'Vidrarias', 
+          drawerIcon: ({color})=>(<Entypo name='list' size={22} color={color}/>),
+          drawerLabelStyle:{marginLeft: -20},
+          drawerActiveTintColor: "#FFF",
+          drawerActiveBackgroundColor: "#54B000"
+        }}
        />
        <StackMain.Screen
         name="NavEquipamentos"
         component={NavEquipamentos}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          title: 'Equipamentos',
+          drawerIcon: ({color})=>(<Entypo name='list' size={22} color={color}/>),
+          drawerLabelStyle:{marginLeft: -20},
+          drawerActiveTintColor: "#FFF",
+          drawerActiveBackgroundColor: "#54B000"
+        }}
+       />
+       <StackMain.Screen
+        name="Settings"
+        component={Settings}
+        options={{
+          title: 'Configurações',
+          drawerIcon: ({color})=>(<Ionicons name='settings-sharp' size={22} color={color}/>),
+          drawerLabelStyle:{marginLeft: -20},
+          drawerActiveTintColor: "#FFF",
+          drawerActiveBackgroundColor: "#54B000"
+        }}
        />
       </StackMain.Navigator>
     </NavigationContainer>
@@ -228,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    height: 150,
+    height: 170,
   },
   linearGradient:{
     position: 'absolute',
@@ -266,7 +314,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     flexDirection: 'column',
     paddingTop: 10,
-    paddingBottom: 10
   },
   conteinerValidade:{
     padding: 15,

@@ -6,26 +6,26 @@ import { DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navi
 export default function DrawerApp(props){
     return(
         <View style={{flex: 1}}>
-            <ImageBackground
+        <DrawerContentScrollView {...props} contentContainerStyle={{backgroundColor:"#54D700"}}>
+        <ImageBackground
                 source={require("../assets/menu-bg.jpeg")}
-                padding={20}
+                padding={10}
             >
                 <View style={{height: 200}}>
-                    <Text>ola</Text>
-                    <Text>ola</Text>
-                    <Text>ola</Text>
-                    <Text>ola</Text>
+                    
                 </View>
             </ImageBackground>
-        <DrawerContentScrollView {...props} contentContainerStyle={{backgroundColor:"rgb(0, 200, 0)"}}>
-            <DrawerItemList {...props} />
-            {/*<DrawerItem
-                label="Help"
-                onPress={() => Linking.openURL('https://mywebsite.com/help')}
-            />*/}
+            <View style={{flex: 1, backgroundColor: "#FFF", paddingTop: 10}}>
+                <DrawerItemList {...props} />
+                {/*<DrawerItem
+                    label="Ajuda"
+                    onPress={() => Linking.openURL('https://mywebsite.com/help')}
+                />*/}
+            </View>
         </DrawerContentScrollView>
-        <View>
-            <Text>Git</Text>
+        <View style={{padding: 20}}>
+            <Text>GitHub</Text>
+            <Text>Desenvolvido para o IFAM </Text>
         </View>
         </View>
     )
