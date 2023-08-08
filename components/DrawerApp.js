@@ -2,7 +2,6 @@ import React from "react";
 import {View, Text, Linking, StyleSheet, ImageBackground} from "react-native";
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
 
-
 export default function DrawerApp(props){
     return(
         <View style={{flex: 1}}>

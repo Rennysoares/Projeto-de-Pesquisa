@@ -21,6 +21,7 @@ import CadastroVidrarias from './components/vidrarias/CadastroVidrarias';
 
 //Equipamentos - Importação de telas
 import TelaEquipamentos from './components/equipamentos/TelaEquipamentos';
+import CadastroEquipamentos from './components/equipamentos/CadastroEquipamentos';
 
 //Card personalizado
 import CardProduct from './components/CardProduct';
@@ -118,6 +119,13 @@ function NavEquipamentos({navigation}){
         ),
       }}
     />
+    <StackGlasswares.Screen
+        name="CadastroEquipamentos" 
+        component={CadastroEquipamentos}
+        options={{
+          title: 'Cadastrar Equipamentos',
+        }}
+      />
   </StackEquipments.Navigator>
   )
 }
@@ -193,6 +201,9 @@ export default function App() {
     <NavigationContainer>
       <StackMain.Navigator 
         drawerContent={(props) => <DrawerApp {...props}
+        screenOptions={{
+
+        }}
       />}>
         <StackMain.Screen
         name="TelaHome"
@@ -213,10 +224,17 @@ export default function App() {
               <Feather name='help-circle' size={22} color='#000'/>
             </View>
           ),
-          drawerIcon: ({color})=>(<Entypo name='home' size={22} color={color}/>),
-          drawerLabelStyle:{marginLeft: -20},
+          drawerIcon: ({color})=>(
+            <Entypo name='home' size={22} color={color}/>
+          ),
+          drawerLabelStyle:{
+            marginLeft: -20,
+            fontWeight: 'bold',
+            fontSize: 15
+          },
           drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000"
+          drawerActiveBackgroundColor: "#54B000",
+          drawerInactiveTintColor: "#333"
         }}
        />
        <StackMain.Screen
