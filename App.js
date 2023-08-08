@@ -3,7 +3,7 @@ import { React, useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Entypo, Ionicons, Feather } from 'react-native-vector-icons';
+import { Entypo, Ionicons, Feather, AntDesign } from 'react-native-vector-icons';
 
 //Importações para a navegação - React Navigation
 import { NavigationContainer } from '@react-navigation/native';
@@ -29,6 +29,9 @@ import Validity from './components/Validade';
 import Graficos from './components/Graficos';
 import DrawerApp from './components/DrawerApp';
 
+//Outras Telas
+import TelaValidade
+ from './components/TelaValidade';
 //Criação de pilhas
 const StackMain = createDrawerNavigator();
 const StackReagents = createStackNavigator();
@@ -129,7 +132,18 @@ function NavEquipamentos({navigation}){
   </StackEquipments.Navigator>
   )
 }
+
+let reagent = 5
+let equipment = 0
+let glassware = 0
+
 function TelaHome( { navigation }){
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+    });
+    unsubscribe;
+}, [navigation]);
 
   return(
     <View>
@@ -181,10 +195,10 @@ function TelaHome( { navigation }){
       </View>
 
       <View style={styles.conteinerValidade}>
-        <Validity/>
+        <Validity navigation={navigation}/>
       </View>
       <View style={styles.conteinerGraficos}>
-        <Graficos/>
+        <Graficos reagent={reagent} glassware={glassware} equipment={equipment}/>
       </View>
       </ScrollView>
     </View>
@@ -268,6 +282,17 @@ export default function App() {
           headerShown: false,
           title: 'Equipamentos',
           drawerIcon: ({color})=>(<Entypo name='list' size={22} color={color}/>),
+          drawerLabelStyle:{marginLeft: -20},
+          drawerActiveTintColor: "#FFF",
+          drawerActiveBackgroundColor: "#54B000"
+        }}
+       />
+       <StackMain.Screen
+        name="Validity"
+        component={TelaValidade}
+        options={{
+          title: 'Controle de validade',
+          drawerIcon: ({color})=>(<AntDesign name='clockcircleo' size={22} color={color}/>),
           drawerLabelStyle:{marginLeft: -20},
           drawerActiveTintColor: "#FFF",
           drawerActiveBackgroundColor: "#54B000"

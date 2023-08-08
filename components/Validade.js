@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, FlatList, Text, StyleSheet, Image } from 'react-native';
+import { View, FlatList, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-const Validity = () => {
+
+const Validity = ({navigation}) => {
   const data = [
     { id: 1, name: 'Reagente 1', expired: false },
     { id: 2, name: 'Reagente 2', expired: true },
@@ -29,7 +30,11 @@ const Validity = () => {
     <View style={styles.card}>
         <View style={styles.miniHeader}>
           <Text>Controle de Validade de estoque</Text>
+          <TouchableOpacity
+            onPress={()=>{navigation.navigate('Validity')}}
+          >
           <Text>Exibir itens</Text>
+          </TouchableOpacity>
         </View>
       <View style={{backgroundColor: '#DDD', borderRadius: 10, padding: 7, justifyContent: 'space-around', height: 130}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>

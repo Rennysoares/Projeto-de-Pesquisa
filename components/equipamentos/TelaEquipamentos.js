@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView, Alert, TextInput } from 'react-native';
 import { fetchDados } from './FetchDados';
 import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
-import { AntDesign, Feather } from 'react-native-vector-icons';
+import { AntDesign, Feather, Ionicons } from 'react-native-vector-icons';
+import { MaskedTextInput } from 'react-native-mask-text';
 
 const dbequipment = DatabaseConnection.getConnectionDBEquipment();
 
@@ -11,7 +12,9 @@ const TelaEquipamentos = ({navigation}) =>{
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [modalDelete, setModalDelete] = useState(false);
+    const [modalEdit, setModalEdit] = useState(false)
     const [selectedItem, setSelectedItem] = useState();
+    const [id, setId] = useState('');
     const [nome, setNome] = useState('');
     const [quantidade, setQuantidade] = useState('');
     const [localizacao, setLocalizacao] = useState('');
@@ -20,6 +23,15 @@ const TelaEquipamentos = ({navigation}) =>{
     const handleShowModal = (iditem) =>{
       setModalDelete(true)
       setSelectedItem(iditem)
+    }
+    
+    const handleShowModalEdit = (item) =>{
+      setModalEdit(true)
+      setId(item.id)
+      setNome(item.nome)
+      setQuantidade(''+item.quantidade)
+      setLocalizacao(item.localizacao)
+      setValidade(item.validade[8]+item.validade[9]+item.validade[7]+item.validade[5]+item.validade[6]+item.validade[4]+item.validade[0]+item.validade[1]+item.validade[2]+item.validade[3])
     }
 
     useEffect(() => {
@@ -58,6 +70,38 @@ const TelaEquipamentos = ({navigation}) =>{
       //setando o array secundário para a flatlist
     };
 
+    const editItem = () => {
+      if (!nome){
+        Alert.alert('Atenção','Por favor preencha o nome do Equipamento!');
+        return;
+      }
+      if (!quantidade){
+        Alert.alert('Atenção','Por favor preencha a quantidade do Equipamento!');
+        return;
+      }
+      if(quantidade<1){
+        Alert.alert('Atenção','Por favor preencha a quantidade do Equipamento corretamente!');
+        return
+      }
+      dbequipment.transaction(tx => {
+        tx.executeSql(
+          'UPDATE Equipamentos SET nome = ?, quantidade = ?, validade = ?, localizacao = ? WHERE id = ?;',
+          [nome,quantidade,validade[6]+validade[7]+validade[8]+validade[9]+validade[5]+validade[3]+validade[4]+validade[2]+validade[0]+validade[1],localizacao,id],
+          () => {
+            console.log('Item atualizado com sucesso!');
+            Alert.alert('Sucesso', 'Item atualizado com sucesso!')
+            setModalEdit(false)
+          },
+          error => {
+            console.log('Erro ao atualizar item:', error);
+            Alert.alert('Erro', 'Erro ao atualizar item:' + error)
+          }
+        );
+      });
+  
+      fetchDados(setData, dbequipment, setFilteredData);
+    }
+
     const deleteItem = (iditem) =>{
       dbequipment.transaction(tx => {
         tx.executeSql(
@@ -77,18 +121,17 @@ const TelaEquipamentos = ({navigation}) =>{
 
     const renderItem = ({ item }) => (
         <View style={styles.item}>
-
           <View>
             <View style={{width: 200}}>
             <Text>Equipamento: {item.nome}</Text>
             </View>
             <Text>Quantidade: {item.quantidade}</Text>
-            <Text>Validade: {item.validade}</Text>
+            <Text>Validade: {item.validade[8]+item.validade[9]+item.validade[7]+item.validade[5]+item.validade[6]+item.validade[4]+item.validade[0]+item.validade[1]+item.validade[2]+item.validade[3]}</Text>
             <Text>Localização: {item.localizacao}</Text>
           </View>
 
           <View style={{flexDirection: 'row', gap: 10}}>
-            <TouchableOpacity onPress={()=>{}}>
+            <TouchableOpacity onPress={()=>{handleShowModalEdit(item)}}>
               <Feather name='edit' size={37} color={'rgb(0, 0, 0)'}/>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>{handleShowModal(item)}}>
@@ -112,6 +155,7 @@ const TelaEquipamentos = ({navigation}) =>{
                     padding:10
                 }}
             />
+            
             <View style={{height: '93%' }}>
             <FlatList
                 data={filteredData}
@@ -153,6 +197,64 @@ const TelaEquipamentos = ({navigation}) =>{
                 </View>  
               </View>
             </Modal>
+            <Modal
+              visible={modalEdit}
+              transparent={true}
+              animationType="fade"
+            >
+              <View style={styles.centermodal}>
+              <View style={styles.modalEdit}>
+                <Text>Editar Vidraria</Text>
+                  <Text style={styles.titleinput}>Nome:</Text>
+                  <TextInput
+                      style={styles.input}
+                      value={nome}
+                      onChangeText={setNome}
+                      placeholder="Digite o nome do equipamento"
+                  />
+
+                  <Text style={styles.titleinput}>Quantidade:</Text>
+                  <TextInput
+                      style={styles.input}
+                      value={quantidade}
+                      keyboardType='numeric'
+                      onChangeText={setQuantidade}
+                      placeholder="Digite a quantidade do equipamento"
+                  />
+
+                  <Text style={styles.titleinput}>Validade:</Text>
+                  <TextInput
+                    mask="99-99-9999"
+                    placeholder="Ex: 01-01-2021"
+                    placeholderTextColor='rgb(120, 120, 120)'
+                    onChangeText={setValidade}
+                    value={validade}
+                    keyboardType="numeric"
+                    style={styles.input}
+                  />
+
+                  <Text style={styles.titleinput}>Localização:</Text>
+                  <TextInput
+                      style={styles.input}
+                      value={localizacao}
+                      onChangeText={setLocalizacao}
+                      placeholder="Digite a localização do equipamento"
+                  />
+                  <View style={{alignItems: 'center', width: '100%'}}>
+                    <TouchableOpacity
+                      onPress={()=>{editItem()}}
+                    >
+                      <View style={styles.botaoSalvar}>
+                        <Text style={{fontSize: 16, color: '#fff'}}>Cadastrar Equipamentos</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                <TouchableOpacity onPress={() => {setModalEdit(false)}} style={{position: 'absolute', top: 0, right: 0, padding: 5}}>
+                    <Ionicons name='close' size={30} color={'rgb(0, 0, 0)'}/>
+                </TouchableOpacity>
+              </View>
+            </View>
+        </Modal>
         </View>
     )
 }
@@ -190,6 +292,27 @@ const styles = StyleSheet.create({
         width: 90,
         alignItems: 'center',
         justifyContent: 'center'
+      },
+      modalEdit:{
+        backgroundColor: 'rgb(250, 250, 250)',
+        padding: 20,
+        height: 400,
+        width: '75%',
+        borderRadius: 15,
+        rowGap: 5,
+      },
+      botaoSalvar:{
+        height:45,
+        width: 230,
+        backgroundColor: 'rgb(0, 140, 255)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10
+      },
+      input:{
+        padding: 7,
+        borderRadius: 5,
+        backgroundColor: 'rgb(255, 255, 255)'
       },
 })
 

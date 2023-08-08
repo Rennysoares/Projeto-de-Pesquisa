@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Button, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
 const dbequipment = DatabaseConnection.getConnectionDBEquipment();
@@ -22,10 +22,14 @@ const CadastroEquipamentos =() =>{
         Alert.alert('Atenção','Por favor preencha a quantidade do Equipamento!');
         return;
       }
+      if(quantidade<1){
+        Alert.alert('Atenção','Por favor preencha a quantidade do Equipamento corretamente!');
+        return
+      }
       dbequipment.transaction((tx) => {
         tx.executeSql(
           'INSERT INTO Equipamentos (nome, quantidade, validade, localizacao) VALUES (?, ?, ?, ?)',
-          [nome, parseInt(quantidade), validade, localizacao],
+          [nome, parseInt(quantidade), validade[6]+validade[7]+validade[8]+validade[9]+validade[5]+validade[3]+validade[4]+validade[2]+validade[0]+validade[1], localizacao],
           () => {
             Alert.alert('Sucesso', 'Cadastrado com sucesso');
             setNome('')
