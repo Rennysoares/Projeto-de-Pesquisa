@@ -2,22 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView, Alert, TextInput } from 'react-native';
 import moment from 'moment';
 import { DatabaseConnection } from '../src/databases/DatabaseConnection';
-import { AntDesign, Feather, Ionicons } from 'react-native-vector-icons';
+import { AntDesign } from 'react-native-vector-icons';
 import {Picker} from '@react-native-picker/picker';
 
-const dbreagent = DatabaseConnection.getConnectionDBReagent();
-const dbequipment = DatabaseConnection.getConnectionDBEquipment()
+const dbreagent = DatabaseConnection.getConnectionDBReagent()
 
 const TelaValidadeReagentes = ({navigation}) =>{
 
     const [itemsNearExpiration, setItemsNearExpiration] = useState([]);
     const [itemsOutOfExpiration, setItemsOutOfExpiration] = useState([]);
-    const [allItemsValidity, setAllItemsValidity] = useState([]);
-    const [option, setOption] = useState();
-
-    useEffect(() => {
-      Alert.alert('alert','alert')
-    }, [option]);
+    const [option, setOption] = useState("fora");
 
     const getItemsNearExpiration = (daysThreshold, callback) => {
         const currentDate = moment().format('YYYY-MM-DD');
@@ -25,9 +19,9 @@ const TelaValidadeReagentes = ({navigation}) =>{
           .add(daysThreshold, 'days')
           .format('YYYY-MM-DD');
       
-        dbequipment.transaction(tx => {
+        dbreagent.transaction(tx => {
           tx.executeSql(
-            'SELECT * FROM Equipamentos WHERE strftime("%s", validade) BETWEEN strftime("%s", ?) AND strftime("%s", ?)',
+            'SELECT * FROM produto JOIN lote ON produto.lote_id = lote.id WHERE (strftime("%s", validade) BETWEEN strftime("%s", ?) AND strftime("%s", ?))',
             
             [currentDate, expirationThreshold],
             (tx, results) => {
@@ -43,12 +37,12 @@ const TelaValidadeReagentes = ({navigation}) =>{
           );
         });
       }
-      const getItemsOutOfExpiration = (callback) => {
+    const getItemsOutOfExpiration = (callback) => {
         const currentDate = moment().format('YYYY-MM-DD');
       
-        dbequipment.transaction(tx => {
+        dbreagent.transaction(tx => {
           tx.executeSql(
-            'SELECT * FROM Equipamentos WHERE date(validade) < date(?)',
+            'SELECT * FROM produto JOIN lote ON produto.lote_id = lote.id WHERE date(validade) < date(?)',
             [currentDate],
             (tx, results) => {
               const items = [];
@@ -74,7 +68,6 @@ const TelaValidadeReagentes = ({navigation}) =>{
                 console.log('Itens fora da validade:',items)
                 setItemsOutOfExpiration(items)
             })
-
         });
         unsubscribe;
     }, [navigation]);
@@ -86,7 +79,7 @@ const TelaValidadeReagentes = ({navigation}) =>{
           <View style={{width: 200}}>
           <Text>Equipamento: {item.nome}</Text>
           </View>
-          <Text>Quantidade: {item.quantidade}</Text>
+          <Text>Quantidade: {item.quantidade_frascos}</Text>
           <Text>Validade: {item.validade[8]+item.validade[9]+item.validade[7]+item.validade[5]+item.validade[6]+item.validade[4]+item.validade[0]+item.validade[1]+item.validade[2]+item.validade[3]}</Text>
           <Text>Localização: {item.localizacao}</Text>
         </View>
@@ -105,7 +98,7 @@ const TelaValidadeReagentes = ({navigation}) =>{
           <View style={{width: 200}}>
           <Text>Equipamento: {item.nome}</Text>
           </View>
-          <Text>Quantidade: {item.quantidade}</Text>
+          <Text>Quantidade: {item.quantidade_frascos}</Text>
           <Text>Validade: {item.validade[8]+item.validade[9]+item.validade[7]+item.validade[5]+item.validade[6]+item.validade[4]+item.validade[0]+item.validade[1]+item.validade[2]+item.validade[3]}</Text>
           <Text>Localização: {item.localizacao}</Text>
         </View>
@@ -126,25 +119,31 @@ const TelaValidadeReagentes = ({navigation}) =>{
               onValueChange={(itemValue, itemIndex) =>
                 setOption(itemValue)
               }>
-              <Picker.Item label="Equipamentos" value="equipamentos" />
-              <Picker.Item label="Reagentes" value="reagentes" />
+              <Picker.Item label="Fora da validade" value="fora" />
+              <Picker.Item label="Próximos da validade (7 dias)" value="prox" />
             </Picker>
-            <Text>Itens fora da validade</Text>
-            <View style={{height: 300 }}>
-              <FlatList
-                  data={itemsOutOfExpiration}
-                  renderItem={renderitemOutOfExpiration}
-                  keyExtractor={(_, index) => index.toString()}
-              />
-            </View>
-            <Text>Itens próximos da validade (7 dias) </Text>
-            <View style={{height: 300 }}>
-              <FlatList
-                  data={itemsNearExpiration}
-                  renderItem={renderItemNearExpiration}
-                  keyExtractor={(_, index) => index.toString()}
-              />
-            </View>
+            {option === "fora" && (
+        <View>
+          <View style={{ height: "90%" }}>
+            <FlatList
+              data={itemsOutOfExpiration}
+              renderItem={renderitemOutOfExpiration}
+              keyExtractor={(_, index) => index.toString()}
+            />
+          </View>
+        </View>
+      )}
+      {option === "prox" && (
+        <View>
+          <View style={{ height: "90%" }}>
+            <FlatList
+              data={itemsNearExpiration}
+              renderItem={renderItemNearExpiration}
+              keyExtractor={(_, index) => index.toString()}
+            />
+          </View>
+        </View>
+      )}
         </View>
     )
 }

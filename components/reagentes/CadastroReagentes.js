@@ -38,7 +38,7 @@ export default function CadastroReagentes( { navigation }){
     dbreagent.transaction(tx => {
       tx.executeSql(
         'INSERT INTO lote (numero, validade, quantidade_geral, unidade_medida, localizacao, quantidade_frascos, quantidade_unitario) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [lote, validade, parseFloat(quantidadeCalculada), sufixo, localizacao, quantidadeFrascos, quantidadeUnitario],
+        [lote, validade[6]+validade[7]+validade[8]+validade[9]+validade[5]+validade[3]+validade[4]+validade[2]+validade[0]+validade[1], parseFloat(quantidadeCalculada), sufixo, localizacao, quantidadeFrascos, quantidadeUnitario],
         (tx, result) => {
           const loteId = result.insertId; // Recupera o ID do lote inserido
           console.log('Lote inserido com sucesso', loteId);
