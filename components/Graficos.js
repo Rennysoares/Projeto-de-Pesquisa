@@ -9,7 +9,7 @@ const dbequipment = DatabaseConnection.getConnectionDBEquipment()
 
 const screenWidth = Dimensions.get("window").width - 30;
 
-const Graficos = () => {
+const Graficos = ({navigation}) => {
   const [reagent, setReagent] = useState(0)
   const [glassware, setGlassware] = useState(0)
   const [equipment, setEquipment] = useState(0)
@@ -29,28 +29,65 @@ const Graficos = () => {
     backgroundGradientFrom: "rgb(200, 200, 200)",
     backgroundGradientTo: "rgb(200, 200, 200)",
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     barPercentage: 1,
     useShadowColorFromDataset: false, // optional
     decimalPlaces: 0
   };
+
   useEffect(() => {
-    const getDataLengthEquiment = () => {
-      dbequipment.transaction((tx) => {
-        tx.executeSql(
-          'SELECT COUNT(*) as count FROM Equipamentos',
-          [],
-          (tx, results) => {
-            const len = results.rows.item(0).count;
-            setEquipment(len);
-          },
-          (error) => {
-            console.error('Error querying data', error);
-          }
-        );
-      });
-    };
-    getDataLengthEquiment()
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      const getDataLengthEquiment = () => {
+        dbequipment.transaction((tx) => {
+          tx.executeSql(
+            'SELECT SUM(quantidade) AS total_quantidade FROM Equipamentos',
+            [],
+            (_, { rows }) => {
+              const len = rows._array;
+              setEquipment(len[0]?.total_quantidade);
+            },
+            (error) => {
+              console.log('Error querying data', error);
+            }
+          );
+        });
+      };
+      const getDataLengthGlassware = () => {
+        dbglassware.transaction((tx) => {
+          tx.executeSql(
+            'SELECT COUNT(*) as count FROM Capacidades',
+            [],
+            (tx, results) => {
+              const len = results.rows.item(0).count;
+              setGlassware(len);
+            },
+            (error) => {
+              console.log('Error querying data', error);
+            }
+          );
+        });
+      };
+      const getDataLengthReagent = () => {
+        dbreagent.transaction((tx) => {
+          tx.executeSql(
+            'SELECT SUM(quantidade_frascos) AS total_quantidade FROM lote',
+            [],
+            (_, { rows }) => {
+              const len = rows._array;
+              setReagent(len[0]?.total_quantidade);
+            },
+            (error) => {
+              console.log('Error querying data', error);
+            }
+          );
+        });
+      };
+      getDataLengthEquiment()
+      getDataLengthGlassware()
+      getDataLengthReagent()
+    });
+    unsubscribe;
+}, [navigation]);
   return (
     <View>
       <Text>Quantidade no Estoque</Text>
@@ -60,7 +97,10 @@ const Graficos = () => {
         height={220}
         chartConfig={chartConfig}
         fromZero={true}
-        style={{borderRadius: 10}}
+        style={{
+          marginVertical: 4,
+          borderRadius: 16
+        }}
       />
     </View>
   );

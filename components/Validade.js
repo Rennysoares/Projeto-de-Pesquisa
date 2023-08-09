@@ -31,7 +31,7 @@ const Validity = ({navigation}) => {
         <View style={styles.miniHeader}>
           <Text>Controle de Validade de estoque</Text>
           <TouchableOpacity
-            onPress={()=>{navigation.navigate('Validity')}}
+            onPress={()=>{navigation.navigate('NavValidade')}}
           >
           <Text>Exibir itens</Text>
           </TouchableOpacity>

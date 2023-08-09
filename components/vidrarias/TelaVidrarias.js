@@ -125,6 +125,7 @@ const TelaVidrarias = ({ navigation }) => {
     unsubscribe;
   }, [navigation]);
   const renderVidrariaItem = ({ item }) => (
+    <TouchableOpacity onLongPress={()=>{handleShowModal(item)}}>
     <View style={styles.itemContainer}>
       <View>
         <Text style={styles.itemNome}>{item.nome}</Text>
@@ -142,6 +143,7 @@ const TelaVidrarias = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </View>
+    </TouchableOpacity>
   );
 
   return (

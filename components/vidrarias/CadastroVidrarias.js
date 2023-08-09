@@ -30,7 +30,26 @@ const CadastroVidrarias = () => {
   };
 
   const handleSubmit = () => {
-    // Salvar os dados no banco de dados
+    if(!nome){
+      Alert.alert('Atenção','Por favor preencha o nome da Vidraria!');
+      return;
+    }
+    const hasEmptyField = (obj) => {
+      for (const key in obj) {
+        if (!obj[key]) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const hasEmptyValue = capacidades.some((value) => hasEmptyField(value));
+    
+
+    if(hasEmptyValue){
+      Alert.alert('Atenção','Por favor preencha as capacidades corretamente!');
+      return;
+    }
     dbglassware.transaction((tx) => {
       tx.executeSql(
         'INSERT INTO Vidrarias (nome, descricao, quantidade) VALUES (?, ?, ?)',
@@ -56,6 +75,9 @@ const CadastroVidrarias = () => {
     });
 
     Alert.alert('Sucesso', 'Cadastrado com sucesso');
+    setNome('')
+    setDescricao('')
+    setCapacidades([{ capacidade: '', quantidade: '' }])
   };
 
   const renderCapacidadeItem = ({ item, index }) => {
@@ -91,15 +113,6 @@ const CadastroVidrarias = () => {
         placeholder="Digite o nome da vidraria"
       />
 
-      <Text style={styles.titleinput}>Localização:</Text>
-      <TextInput
-        style={styles.input}
-        value={descricao}
-        onChangeText={setDescricao}
-        placeholder="Digite a localização da vidraria"
-        multiline
-      />
-
       <Text style={styles.titleinput}>Capacidades:</Text>
       <View style={{margin: 10}}>
         <FlatList
@@ -112,6 +125,14 @@ const CadastroVidrarias = () => {
           <Text style={styles.adicionarCapacidade}>Adicionar Capacidade</Text>
         </TouchableOpacity>
       </View>
+      <Text style={styles.titleinput}>Localização:</Text>
+      <TextInput
+        style={styles.input}
+        value={descricao}
+        onChangeText={setDescricao}
+        placeholder="Digite a localização da vidraria"
+        multiline
+      />
       <View style={{alignItems: 'center', width: '100%'}}>
       <TouchableOpacity onPress={handleSubmit}>
         <View style={styles.botaoSalvar}>

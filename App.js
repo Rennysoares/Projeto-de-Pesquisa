@@ -9,6 +9,7 @@ import { Entypo, Ionicons, Feather, AntDesign } from 'react-native-vector-icons'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 //Reagentes - Importações de telas
 import TelaReagentes from './components/reagentes/TelaReagentes';
@@ -30,13 +31,36 @@ import Graficos from './components/Graficos';
 import DrawerApp from './components/DrawerApp';
 
 //Outras Telas
-import TelaValidade
- from './components/TelaValidade';
+import TelaValidadeEquipamentos from './components/TelaValidadeEquipamentos';
+import TelaValidadeReagentes from './components/TelaValidadeReagentes';
+
 //Criação de pilhas
 const StackMain = createDrawerNavigator();
 const StackReagents = createStackNavigator();
 const StackGlasswares = createStackNavigator();
 const StackEquipments = createStackNavigator();
+const StackValidity = createMaterialTopTabNavigator();
+
+function NavValidade({navigation}){
+  return(
+    <StackValidity.Navigator>
+      <StackValidity.Screen
+        name="ValidadeEquipamentos" 
+        component={TelaValidadeEquipamentos}
+        options={{
+          title: 'Equipamentos', 
+        }}
+      />
+      <StackValidity.Screen
+        name="ValidadeReagentes" 
+        component={TelaValidadeReagentes}
+        options={{
+          title: 'Reagentes', 
+        }}
+      />
+    </StackValidity.Navigator>
+  )
+}
 
 function NavReagentes({ navigation }){
   return(
@@ -133,10 +157,6 @@ function NavEquipamentos({navigation}){
   )
 }
 
-let reagent = 5
-let equipment = 0
-let glassware = 0
-
 function TelaHome( { navigation }){
 
   useEffect(() => {
@@ -198,7 +218,7 @@ function TelaHome( { navigation }){
         <Validity navigation={navigation}/>
       </View>
       <View style={styles.conteinerGraficos}>
-        <Graficos reagent={reagent} glassware={glassware} equipment={equipment}/>
+        <Graficos navigation={navigation}/>
       </View>
       </ScrollView>
     </View>
@@ -288,8 +308,8 @@ export default function App() {
         }}
        />
        <StackMain.Screen
-        name="Validity"
-        component={TelaValidade}
+        name="NavValidade"
+        component={NavValidade}
         options={{
           title: 'Controle de validade',
           drawerIcon: ({color})=>(<AntDesign name='clockcircleo' size={22} color={color}/>),
