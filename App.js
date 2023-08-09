@@ -45,17 +45,17 @@ function NavValidade({navigation}){
   return(
     <StackValidity.Navigator>
       <StackValidity.Screen
-        name="ValidadeEquipamentos" 
-        component={TelaValidadeEquipamentos}
-        options={{
-          title: 'Equipamentos', 
-        }}
-      />
-      <StackValidity.Screen
         name="ValidadeReagentes" 
         component={TelaValidadeReagentes}
         options={{
           title: 'Reagentes', 
+        }}
+      />
+      <StackValidity.Screen
+        name="ValidadeEquipamentos" 
+        component={TelaValidadeEquipamentos}
+        options={{
+          title: 'Equipamentos', 
         }}
       />
     </StackValidity.Navigator>

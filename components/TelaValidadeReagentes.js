@@ -104,9 +104,7 @@ const TelaValidadeReagentes = ({navigation}) =>{
         </View>
 
         <View style={{flexDirection: 'row', gap: 10}}>
-          <TouchableOpacity onPress={()=>{handleShowModal(item)}}>
-            <AntDesign name='delete' size={37} color={'rgb(240, 10, 10)'}/>
-          </TouchableOpacity>
+
         </View>
 
       </View>
