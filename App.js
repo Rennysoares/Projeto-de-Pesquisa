@@ -1,3 +1,5 @@
+import RouteMain from './src/routes/RouteMain';
+
 //Importações dos Core Components do React e do React Native
 import { React, useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
@@ -12,9 +14,9 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 //Reagentes - Importações de telas
-import TelaReagentes from './components/reagentes/TelaReagentes';
-import CadastroReagentes from './components/reagentes/CadastroReagentes';
-import EditarReagentes from './components/reagentes/EditarReagentes';
+import SearchReagent from './src/pages/reagents/SearchReagent';
+import RegisterReagent from './src/pages/reagents/RegisterReagent';
+import EditReagent from './src/pages/reagents/EditReagent';
 
 //Vidrarias - Importação de telas
 import TelaVidrarias from './components/vidrarias/TelaVidrarias';
@@ -67,7 +69,7 @@ function NavReagentes({ navigation }){
       <StackReagents.Navigator initialRouteName="Home">
       <StackReagents.Screen 
       name="Home" 
-      component={TelaReagentes}
+      component={SearchReagent}
       options={{
         title: 'Consultar Reagentes',
         headerLeft:()=>(
@@ -83,7 +85,7 @@ function NavReagentes({ navigation }){
       />
       <StackReagents.Screen 
       name="CadastroReagentes" 
-      component={CadastroReagentes}
+      component={RegisterReagent}
       options={{
         title: 'Cadastrar reagentes', 
       }}
@@ -91,7 +93,7 @@ function NavReagentes({ navigation }){
       />
       <StackReagents.Screen 
       name="EditarReagentes" 
-      component={EditarReagentes}
+      component={EditReagent}
       />
     </StackReagents.Navigator>
   )
@@ -158,12 +160,6 @@ function NavEquipamentos({navigation}){
 }
 
 function TelaHome( { navigation }){
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-    });
-    unsubscribe;
-}, [navigation]);
 
   return(
     <View>
@@ -233,7 +229,8 @@ function Settings(){
 export default function App() {
   return (
     <NavigationContainer>
-      <StackMain.Navigator 
+      <RouteMain/>
+      {/*<StackMain.Navigator 
         drawerContent={(props) => <DrawerApp {...props}
         screenOptions={{
 
@@ -329,7 +326,7 @@ export default function App() {
           drawerActiveBackgroundColor: "#54B000"
         }}
        />
-      </StackMain.Navigator>
+      </StackMain.Navigator>*/}
     </NavigationContainer>
   );
 }

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
-import { fetchDados } from './FetchDados';
+import { DatabaseConnection } from '../../databases/DatabaseConnection';
+
+import { consultReagents } from '../../databases/DatabaseQueries';
+
 import { TextInput } from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, Feather } from 'react-native-vector-icons';
-const dbreagent = DatabaseConnection.getConnectionDBReagent();
 
-const TelaReagentes = ({ navigation }) => {
+const dbreagent = DatabaseConnection.getConnectionDBReagent();
+const database = DatabaseConnection.getConnectionDatabase()
+
+const SearchReagent = ({ navigation }) => {
   
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -31,7 +35,7 @@ const TelaReagentes = ({ navigation }) => {
   };
   
   const deleteItem = (itemId) => {
-    dbreagent.transaction(tx => {
+    database.transaction(tx => {
       tx.executeSql(
         'DELETE FROM produto WHERE id = ?',
         [itemId],
@@ -44,7 +48,7 @@ const TelaReagentes = ({ navigation }) => {
       );
     });
 
-    dbreagent.transaction(tx => {
+    database.transaction(tx => {
       tx.executeSql(
         'DELETE FROM lote WHERE id = ?',
         [itemId],
@@ -58,56 +62,13 @@ const TelaReagentes = ({ navigation }) => {
     });
     setModalVisible2(false)
     setModalVisible(false)
-    fetchDados(setData, dbreagent, setFilteredData);    
+    consultReagents(setData, setFilteredData);    
   };
-
-  useEffect(() => {
-    const createTables = () => {
-      let firstTableCreated = false;
-      let secondTableCreated = false;
-
-      dbreagent.transaction(tx => {
-        tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS lote (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, validade TEXT, quantidade_geral REAL, unidade_medida TEXT, localizacao TEXT, quantidade_frascos INTEGER, quantidade_unitario REAL)',
-          [],
-          () => {
-            console.log('tabela lote criada com sucesso ou verificada se existe');
-            firstTableCreated = true;
-            if (firstTableCreated && secondTableCreated) {
-              setDatabaseReady(true);
-              fetchDados(setData, dbreagent, setFilteredData);
-            }
-          },
-          error => {
-            console.log('Erro ao criar tabela produto:', error);
-          }
-        );
-
-        tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS produto (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, lote_id INTEGER, FOREIGN KEY (lote_id) REFERENCES lote (id))',
-          [],
-          () => {
-            console.log('tabela produto criada com sucesso ou verificada se existe');
-            secondTableCreated = true;
-            if (firstTableCreated && secondTableCreated) {
-              setDatabaseReady(true);
-              fetchDados(setData, dbreagent, setFilteredData);
-            }
-          },
-          error => {
-            console.log('Erro ao criar tabela lote:', error);
-          }
-        );
-      });
-    };
-
-    createTables();
-  }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       console.log('A tela principal foi ativada');
-      fetchDados(setData, dbreagent, setFilteredData);
+      consultReagents(setData, setFilteredData);
     });
 
     
@@ -129,7 +90,7 @@ const TelaReagentes = ({ navigation }) => {
           onPress={() => handleShowModal(item)}
           >
           <Image
-          source={require('../../assets/iconmore.png')}
+          source={require('../../../assets/iconmore.png')}
           style={{height: 50, width: 50}}
           />
         </TouchableOpacity>
@@ -161,7 +122,7 @@ const TelaReagentes = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
-        onPress={()=>{navigation.navigate('CadastroReagentes')}}
+        onPress={()=>{navigation.navigate('RegisterReagent')}}
       >
           <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
       </TouchableOpacity>
@@ -179,7 +140,7 @@ const TelaReagentes = ({ navigation }) => {
 
               <ScrollView style={{height: 350}}>
               <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
-                <Image source={require("../../assets/reagenticon.png")} style={{height: 55, width: 55}}/>
+                <Image source={require("../../../assets/reagenticon.png")} style={{height: 55, width: 55}}/>
                 <Text style={{fontSize: 18, width:190, fontWeight: 'bold'}}>{selectedItem?.nome}</Text>
               </View>
               <View style={{gap: 10}}>
@@ -222,7 +183,7 @@ const TelaReagentes = ({ navigation }) => {
               height: 60
             }}>
               <TouchableOpacity
-              onPress={()=>{setModalVisible(false);navigation.navigate('EditarReagentes', {selectedItem})}}
+              onPress={()=>{setModalVisible(false);navigation.navigate('EditReagent', {selectedItem})}}
               >
                 <Feather name='edit' size={37} color={'rgb(0, 0, 0)'}/>
               </TouchableOpacity>
@@ -270,7 +231,7 @@ const TelaReagentes = ({ navigation }) => {
   );
 };
 
-export default TelaReagentes;
+export default SearchReagent;
 
 
 const styles = StyleSheet.create({

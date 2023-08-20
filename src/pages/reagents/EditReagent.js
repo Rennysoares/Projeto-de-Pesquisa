@@ -3,10 +3,10 @@ import { Text, View, StyleSheet, TouchableOpacity, Image, Modal, Button, ScrollV
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaskedTextInput } from 'react-native-mask-text';
 import { Ionicons } from 'react-native-vector-icons';
-import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
+import { DatabaseConnection } from '../../../src/databases/DatabaseConnection';
 const dbreagent = DatabaseConnection.getConnectionDBReagent();
 
-export default function EditarReagentes({route, navigation}){
+export default function EditReagent({route, navigation}){
 
   const [modalVisibleRename, setModalVisibleRename] = useState(false);
   const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
@@ -136,7 +136,7 @@ export default function EditarReagentes({route, navigation}){
         >
           <View style={styles.button}>
             <Image
-                source={require("../../assets/iconedit2.png")}
+                source={require("../../../assets/iconedit2.png")}
                 style={{height: 70, width: 70}}
             />
             <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Editar Dados</Text>
@@ -148,7 +148,7 @@ export default function EditarReagentes({route, navigation}){
         >
           <View style={styles.button}>
           <Image
-                source={require("../../assets/update.png")}
+                source={require("../../../assets/update.png")}
                 style={{height: 70, width: 70}}
             />
             <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Atualizar estoque</Text>
@@ -160,7 +160,7 @@ export default function EditarReagentes({route, navigation}){
         >
           <View style={styles.button}>
           <Image
-                source={require("../../assets/addreagent.png")}
+                source={require("../../../assets/addreagent.png")}
                 style={{height: 70, width: 70}}
             />
             <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Adicionar Frascos</Text>
