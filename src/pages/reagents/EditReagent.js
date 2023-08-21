@@ -1,10 +1,10 @@
 import React ,{ useState, useEffect} from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Image, Modal, Button, ScrollView, Switch, TextInput, Alert} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import moment from 'moment';
 import { MaskedTextInput } from 'react-native-mask-text';
 import { Ionicons } from 'react-native-vector-icons';
 import { DatabaseConnection } from '../../../src/databases/DatabaseConnection';
-const dbreagent = DatabaseConnection.getConnectionDBReagent();
+const database = DatabaseConnection.getConnectionDatabase();
 
 export default function EditReagent({route, navigation}){
 
@@ -57,7 +57,7 @@ export default function EditReagent({route, navigation}){
 
   function updateData_Rename(){
     console.log('Nome: ' + nomeReagente + ' Lote: ' +  lote + ' Validade: ' + validade + ' Localização: ' + localizacao)
-    dbreagent.transaction((tx) => {
+    database.transaction((tx) => {
       tx.executeSql(
         'UPDATE produto SET nome = ? WHERE id = ?;',
         [nomeReagente, id_params],
@@ -90,7 +90,7 @@ export default function EditReagent({route, navigation}){
   }
 
   function updateData_Update(){
-    dbreagent.transaction((tx) => {
+    database.transaction((tx) => {
       tx.executeSql(
         'UPDATE lote SET quantidade_geral = ? WHERE id = ?;',
         [parseFloat(quantidadeGeral), id_params],
@@ -109,7 +109,7 @@ export default function EditReagent({route, navigation}){
   }
 
   function updateData_Add(){
-    dbreagent.transaction((tx) => {
+    database.transaction((tx) => {
       tx.executeSql(
         'UPDATE lote SET quantidade_geral = ?, quantidade_frascos = ? WHERE id = ?;',
         [parseFloat(quantidade_geral_params) + (parseFloat(quantidadeFrascosAdicionais)*parseFloat(quantidade_unitario_params)), 
@@ -197,7 +197,7 @@ export default function EditReagent({route, navigation}){
 
         <View>
           <Text style={{fontSize: 16}}>Validade: </Text>
-          <Text style={{fontSize: 16}}>{validade_params}</Text>
+          <Text style={{fontSize: 16}}>{moment(validade_params, "YYYY/MM/DD").format("DD-MM-YYYY")}</Text>
         </View>
 
         <View>

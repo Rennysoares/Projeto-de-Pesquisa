@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Button, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import moment from 'moment';
 import { DatabaseConnection } from '../../databases/DatabaseConnection'; 
 
-const dbequipment = DatabaseConnection.getConnectionDBEquipment();
+const database = DatabaseConnection.getConnectionDatabase();
 import { MaskedTextInput } from 'react-native-mask-text';
 
-const RegisterEquipments =() =>{
+const RegisterEquipment =() =>{
     const [nome, setNome] = useState('');
     const [quantidade, setQuantidade] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [validade, setValidade] = useState('');
+
+    function formatData () {
+      const data = moment(validade, "DD/MM/YYYY");
+      return data.format("YYYY-MM-DD");
+    }
 
     const handleSubmit = () => {
       if (!nome){
@@ -25,10 +31,10 @@ const RegisterEquipments =() =>{
         Alert.alert('Atenção','Por favor preencha a quantidade do Equipamento corretamente!');
         return
       }
-      dbequipment.transaction((tx) => {
+      database.transaction((tx) => {
         tx.executeSql(
           'INSERT INTO Equipamentos (nome, quantidade, validade, localizacao) VALUES (?, ?, ?, ?)',
-          [nome, parseInt(quantidade), validade[6]+validade[7]+validade[8]+validade[9]+validade[5]+validade[3]+validade[4]+validade[2]+validade[0]+validade[1], localizacao],
+          [nome, parseInt(quantidade),formatData() , localizacao],
           () => {
             Alert.alert('Sucesso', 'Cadastrado com sucesso');
             setNome('')
@@ -38,23 +44,6 @@ const RegisterEquipments =() =>{
           },
           (tx, error) => {
             console.error('Erro ao inserir vidraria no banco de dados', error);
-            Alert.alert('Erro', error);
-          }
-        );
-      });
-    };
-
-    const dropTable = () => {
-      dbequipment.transaction((tx) => {
-        tx.executeSql(
-          'DROP TABLE Equipamentos',
-          [],
-          () => {
-            Alert.alert('Sucesso', 'Apagado com sucesso');
-            
-          },
-          (tx, error) => {
-            console.error('Erro ao apagar BD', error);
             Alert.alert('Erro', error);
           }
         );
@@ -132,4 +121,4 @@ const styles = StyleSheet.create({
     },
   });
 
-export default RegisterEquipments;
+export default RegisterEquipment;

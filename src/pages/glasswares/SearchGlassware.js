@@ -75,13 +75,11 @@ const SearchGlassware = ({ navigation }) => {
   };
   
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      console.log('A tela principal foi ativada');
+    const updateflatlist = navigation.addListener('focus', () => {
+      console.log('Updated Flatlist');
       consultGlasswares(setData, setFilteredData);
     });
-
-    
-    unsubscribe;
+    updateflatlist;
   }, [navigation]);
   const renderVidrariaItem = ({ item }) => (
     <TouchableOpacity onLongPress={()=>{handleShowModal(item)}}>
@@ -188,7 +186,7 @@ const SearchGlassware = ({ navigation }) => {
         </Modal>
         <TouchableOpacity
         style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
-        onPress={()=>{navigation.navigate('CadastroVidrarias')}}
+        onPress={()=>{navigation.navigate('RegisterGlassware')}}
           >
           <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
         </TouchableOpacity>

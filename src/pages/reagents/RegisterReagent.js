@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { MaskedTextInput } from 'react-native-mask-text';
-
+import moment from 'moment';
 import { DatabaseConnection } from '../../../src/databases/DatabaseConnection';
 const dbreagent = DatabaseConnection.getConnectionDBReagent();
 const database = DatabaseConnection.getConnectionDatabase();
@@ -30,6 +30,11 @@ export default function RegisterReagent( { navigation }){
   const[quantidadeFrascos, setQuantidadeFrascos] = useState('')
   const[quantidadeCalculada, setQuantidadeCalculada] = useState('')
   
+  function formatData () {
+    const data = moment(validade, "DD/MM/YYYY");
+    return data.format("YYYY-MM-DD");
+  }
+  
   useEffect(()=>{
     setQuantidadeCalculada(parseFloat(quantidadeFrascos)*parseFloat(quantidadeUnitario))
   })
@@ -39,7 +44,7 @@ export default function RegisterReagent( { navigation }){
     database.transaction(tx => {
       tx.executeSql(
         'INSERT INTO lote (numero, validade, quantidade_geral, unidade_medida, localizacao, quantidade_frascos, quantidade_unitario) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [lote, validade[6]+validade[7]+validade[8]+validade[9]+validade[5]+validade[3]+validade[4]+validade[2]+validade[0]+validade[1], parseFloat(quantidadeCalculada), sufixo, localizacao, quantidadeFrascos, quantidadeUnitario],
+        [lote, formatData(), parseFloat(quantidadeCalculada), sufixo, localizacao, quantidadeFrascos, quantidadeUnitario],
         (tx, result) => {
           const loteId = result.insertId; // Recupera o ID do lote inserido
           console.log('Lote inserido com sucesso', loteId);

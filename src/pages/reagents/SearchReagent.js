@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView, TextInput } from 'react-native';
 import { DatabaseConnection } from '../../databases/DatabaseConnection';
-
+import moment from 'moment';
 import { consultReagents } from '../../databases/DatabaseQueries';
-
-import { TextInput } from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, Feather } from 'react-native-vector-icons';
 
-const dbreagent = DatabaseConnection.getConnectionDBReagent();
 const database = DatabaseConnection.getConnectionDatabase()
 
 const SearchReagent = ({ navigation }) => {
-  
+
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [isDatabaseReady, setDatabaseReady] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible2, setModalVisible2] = useState(false);
@@ -25,10 +20,8 @@ const SearchReagent = ({ navigation }) => {
       return item.nome.toLowerCase().includes(text.toLowerCase());
     });
     setFilteredData(filteredItems);
-    //setando o array secundário para a flatlist
   };
   
-
   const handleShowModal = (item) => {
     setSelectedItem(item);
     setModalVisible(true);
@@ -66,37 +59,47 @@ const SearchReagent = ({ navigation }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      console.log('A tela principal foi ativada');
+    const updateflatlist = navigation.addListener('focus', () => {
+      console.log('Updated Flatlist');
       consultReagents(setData, setFilteredData);
     });
-
-    
-    unsubscribe;
+    updateflatlist;
   }, [navigation]);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      
-      <View>
-        <View style={{width: 250, overflow: 'hidden'}}>
-          <Text>Reagente: {item.nome}</Text>
+  const renderItem = ({ item }) => {
+    let status = 'rgb(0, 0, 0)'
+    if (parseFloat(item.quantidade_geral) < (parseFloat(item.quantidade_unitario) * parseFloat(item.quantidade_frascos))*(5/100) ){
+      status = 'rgb(255, 0, 0)'
+    }
+    else if (parseFloat(item.quantidade_geral) <= (parseFloat(item.quantidade_unitario) * parseFloat(item.quantidade_frascos))/2){
+      status = 'rgb(210, 210, 0)'
+    }
+    return(
+      <View style={styles.item}>
+        
+        <View>
+          <View style={{width: 250, overflow: 'hidden'}}>
+            <Text>Reagente: {item.nome}</Text>
+          </View>
+          <Text>
+            <Text>Quantidade Geral: </Text>
+            <Text style={{color: status}}>{item.quantidade_geral + item.unidade_medida}</Text>
+          </Text>
+          <Text>Validade: {moment(item.validade, "YYYY/MM/DD").format("DD-MM-YYYY")}</Text>
         </View>
-        <Text>Quantidade Geral: {item.quantidade_geral + item.unidade_medida}</Text>
-        <Text>Validade: {item.validade}</Text>
+        <View>
+          <TouchableOpacity 
+            onPress={() => handleShowModal(item)}
+            >
+            <Image
+            source={require('../../../assets/iconmore.png')}
+            style={{height: 50, width: 50}}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View>
-        <TouchableOpacity 
-          onPress={() => handleShowModal(item)}
-          >
-          <Image
-          source={require('../../../assets/iconmore.png')}
-          style={{height: 50, width: 50}}
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+    )
+  };
 
   return (
     <View>
@@ -166,7 +169,7 @@ const SearchReagent = ({ navigation }) => {
 
               <View>
                 <Text style={{fontSize: 16}}>Validade: </Text>
-                <Text style={{fontSize: 16}}>{selectedItem?.validade}</Text>
+                <Text style={{fontSize: 16}}>{moment(selectedItem?.validade, "YYYY/MM/DD").format("DD-MM-YYYY") }</Text>
               </View>
 
               <View>

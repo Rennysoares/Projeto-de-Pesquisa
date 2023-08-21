@@ -1,28 +1,60 @@
 //Importações dos Core Components do React e do React Native
 import { React, useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
+import { View } from 'react-native';
 import { Entypo, Ionicons, Feather, AntDesign } from 'react-native-vector-icons';
 
-//Importações para a navegação - React Navigation
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import * as SecureStorage from 'expo-secure-store';
+
+const SECURE_STORAGE_KEY = 'selectedTheme';
+
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+import ThemeContext from '../context/ThemeContext';
 
 //Import Main Screens
 import Home from '../pages/main/Home';
-import Settings from '../pages/main/Settings';
 import DrawerTab from '../components/DrawerTab';
 //Children routes
 import RouteReagents from './RouteReagents';
 import RouteGlasswares from './RouteGlasswares';
 import RouteEquipments from './RouteEquipments';
 import RouteValidity from './RouteValidity';
+import RouteSettings from './RouteSettings';
 
 const StackMain = createDrawerNavigator();
 
 export default function RouteMain(){
+  const [theme, setTheme] = useState('light'); // Estado para controlar o tema
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+  };
+
+  useEffect(() => {
+    async function loadStoredTheme() {
+      try {
+        const storedTheme = await SecureStorage.getItemAsync(SECURE_STORAGE_KEY);
+        if (storedTheme) {
+          setTheme(storedTheme);
+        }
+      } catch (error) {
+        console.error('Error loading stored theme', error);
+      }
+    }
+
+    loadStoredTheme();
+  }, []);
+
+  useEffect(() => {
+    SecureStorage.setItemAsync(SECURE_STORAGE_KEY, theme)
+      .catch(error => {
+        console.error('Error saving theme', error);
+      });
+  }, [theme]);
+
     return(
+      <ThemeContext.Provider value={{theme, toggleTheme}}>
         <StackMain.Navigator 
         drawerContent={(props) => <DrawerTab {...props}
         screenOptions={{
@@ -109,16 +141,18 @@ export default function RouteMain(){
         }}
        />
        <StackMain.Screen
-        name="Settings"
-        component={Settings}
+        name="RouteSettings"
+        component={RouteSettings}
         options={{
           title: 'Configurações',
+          headerShown: false,
           drawerIcon: ({color})=>(<Ionicons name='settings-sharp' size={22} color={color}/>),
           drawerLabelStyle:{marginLeft: -20},
           drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000"
+          drawerActiveBackgroundColor: "#54B000",
         }}
        />
       </StackMain.Navigator>
+      </ThemeContext.Provider>
     )
 }

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView, Alert, TextInput } from 'react-native';
-import { fetchDados } from './FetchDados';
-import { DatabaseConnection } from '../../src/databases/DatabaseConnection';
+import { consultEquipments } from '../../databases/DatabaseQueries';
+import { DatabaseConnection } from '../../databases/DatabaseConnection';
 import { AntDesign, Feather, Ionicons } from 'react-native-vector-icons';
 import { MaskedTextInput } from 'react-native-mask-text';
 
-const dbequipment = DatabaseConnection.getConnectionDBEquipment();
+const database = DatabaseConnection.getConnectionDatabase();
 
-const TelaEquipamentos = ({navigation}) =>{
+const SearchEquipment = ({navigation}) =>{
 
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -35,29 +35,9 @@ const TelaEquipamentos = ({navigation}) =>{
     }
 
     useEffect(() => {
-        const createTables = () => {
-          dbequipment.transaction(tx => {
-            tx.executeSql(
-              'CREATE TABLE IF NOT EXISTS Equipamentos ( id INTEGER PRIMARY KEY AUTOINCREMENT,nome TEXT NOT NULL, quantidade INTEGER NOT NULL, validade TEXT, localizacao TEXT)',
-              [],
-              () => {
-                console.log('tabela Equipamentos criada com sucesso ou verificada se existe');
-                fetchDados(setData, dbequipment, setFilteredData);
-              },
-              error => {
-                console.log('Erro ao criar tabela produto:', error);
-              }
-            );
-          });
-        };
-    
-        createTables();
-    }, []);
-
-    useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
           console.log('A tela principal foi ativada');
-          fetchDados(setData, dbequipment, setFilteredData);
+          consultEquipments(setData, setFilteredData);
         });
         unsubscribe;
     }, [navigation]);
@@ -83,7 +63,7 @@ const TelaEquipamentos = ({navigation}) =>{
         Alert.alert('Atenção','Por favor preencha a quantidade do Equipamento corretamente!');
         return
       }
-      dbequipment.transaction(tx => {
+      database.transaction(tx => {
         tx.executeSql(
           'UPDATE Equipamentos SET nome = ?, quantidade = ?, validade = ?, localizacao = ? WHERE id = ?;',
           [nome,quantidade,validade[6]+validade[7]+validade[8]+validade[9]+validade[5]+validade[3]+validade[4]+validade[2]+validade[0]+validade[1],localizacao,id],
@@ -99,11 +79,11 @@ const TelaEquipamentos = ({navigation}) =>{
         );
       });
   
-      fetchDados(setData, dbequipment, setFilteredData);
+      consultEquipments(setData, setFilteredData);
     }
 
     const deleteItem = (iditem) =>{
-      dbequipment.transaction(tx => {
+      database.transaction(tx => {
         tx.executeSql(
           'DELETE FROM Equipamentos WHERE id = ?',
           [iditem],
@@ -116,7 +96,7 @@ const TelaEquipamentos = ({navigation}) =>{
         );
       });
   
-      fetchDados(setData, dbequipment, setFilteredData);
+      consultEquipments(setData, setFilteredData);
     }
 
     const renderItem = ({ item }) => (
@@ -166,7 +146,7 @@ const TelaEquipamentos = ({navigation}) =>{
             </View>
             <TouchableOpacity
               style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
-              onPress={()=>{navigation.navigate('CadastroEquipamentos')}}
+              onPress={()=>{navigation.navigate('RegisterEquipments')}}
             >
                 <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
             </TouchableOpacity>
@@ -316,4 +296,4 @@ const styles = StyleSheet.create({
       },
 })
 
-export default TelaEquipamentos;
+export default SearchEquipment;

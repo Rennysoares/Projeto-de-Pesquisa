@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import {createTableReagents, createTableGlasswares, createTableEquipments} from '../../databases/DatabaseCreateTables'
 //Card personalizado
-import CardProduct from '../../../components/CardProduct';
+import CardProduct from '../../components/CardProduct'
 import Validity from '../../components/Validity';
 import Graphic from '../../components/Graphic';
 
