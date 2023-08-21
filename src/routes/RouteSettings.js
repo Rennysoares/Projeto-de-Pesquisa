@@ -1,14 +1,31 @@
-import { React } from 'react';
+import { React, useContext } from 'react';
 import { Image, TouchableOpacity} from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-
+import { createStackNavigator} from '@react-navigation/stack';
+import { forFade, forSlide } from '../animations/Animations';
 import Settings from '../pages/settings/Settings';
 import Theme_custom from '../pages/settings/Theme_custom';
 const StackSettings = createStackNavigator();
+import ThemeContext from '../context/ThemeContext';
+
 
 export default function RouteSettings({navigation}){
+
+  const {theme} = useContext(ThemeContext);
+
     return (
-    <StackSettings.Navigator initialRouteName="Home">
+    <StackSettings.Navigator initialRouteName="Home" 
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: `${theme === 'light' ? '#FFF' : '#222' }`,
+        },
+        headerTintColor: `${theme === 'light' ? '#222' : '#FFF' }`,
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+        cardStyleInterpolator: forSlide 
+      }}
+      
+    >
       <StackSettings.Screen
         name="Settings"
         component={Settings}
@@ -27,6 +44,7 @@ export default function RouteSettings({navigation}){
               />
             </TouchableOpacity>
           ),
+          
         }}
        />
        <StackSettings.Screen

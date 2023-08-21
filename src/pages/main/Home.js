@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useContext } from 'react';
 import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {createTableReagents, createTableGlasswares, createTableEquipments} from '../../databases/DatabaseCreateTables'
@@ -7,7 +7,11 @@ import CardProduct from '../../components/CardProduct'
 import Validity from '../../components/Validity';
 import Graphic from '../../components/Graphic';
 
+import ThemeContext from '../../context/ThemeContext';
+
 export default function Home( { navigation }){
+
+  const {theme} = useContext(ThemeContext);
 
   useEffect(() => {
     createTableReagents();

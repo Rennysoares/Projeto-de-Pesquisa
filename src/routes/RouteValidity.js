@@ -6,7 +6,8 @@ const StackValidity = createMaterialTopTabNavigator();
 
 export default function RouteValidity({navigation}){
     return(
-      <StackValidity.Navigator>
+      <StackValidity.Navigator
+      >
         <StackValidity.Screen
           name="ValidityReagents" 
           component={ValidityReagents}

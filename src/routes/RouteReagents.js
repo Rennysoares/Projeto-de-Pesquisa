@@ -1,6 +1,6 @@
 import { React } from 'react';
 import { Image, TouchableOpacity} from 'react-native';
-
+import { forFade } from '../animations/Animations';
 import SearchReagent from '../pages/reagents/SearchReagent';
 import RegisterReagent from '../pages/reagents/RegisterReagent';
 import EditReagent from '../pages/reagents/EditReagent';
@@ -10,7 +10,12 @@ const StackReagents = createStackNavigator();
 
 export default function RouteReagents({ navigation }){
     return(
-        <StackReagents.Navigator initialRouteName="Home">
+        <StackReagents.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+                cardStyleInterpolator: forFade 
+            }}
+            >
 
             <StackReagents.Screen 
                 name="SearchReagent" 

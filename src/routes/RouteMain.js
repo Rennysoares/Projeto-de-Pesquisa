@@ -2,6 +2,7 @@
 import { React, useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { Entypo, Ionicons, Feather, AntDesign } from 'react-native-vector-icons';
+import { forFade, forSlide } from '../animations/Animations';
 
 import * as SecureStorage from 'expo-secure-store';
 
@@ -56,10 +57,10 @@ export default function RouteMain(){
     return(
       <ThemeContext.Provider value={{theme, toggleTheme}}>
         <StackMain.Navigator 
-        drawerContent={(props) => <DrawerTab {...props}
-        screenOptions={{
-
-        }}
+          drawerContent={(props) => <DrawerTab {...props}
+          screenOptions={{
+            cardStyleInterpolator: forFade,
+          }}
       />}>
         <StackMain.Screen
         name="Home"
