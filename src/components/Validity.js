@@ -1,14 +1,21 @@
-import {React, useState, useEffect} from 'react';
+import {React, useState, useEffect, useContext} from 'react';
 import { View, FlatList, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { DatabaseConnection } from '../databases/DatabaseConnection'; 
 import moment from 'moment';
 
-const dbreagent = DatabaseConnection.getConnectionDBReagent();
-const dbequipment = DatabaseConnection.getConnectionDBEquipment();
+import ThemeContext from '../context/ThemeContext';
+import themes from '../themes/Themes';
+import { ThemeProvider } from 'styled-components';
+
+import { Text as RegularText, Container } from '../styles/components/StylesValidity';
 
 const database = DatabaseConnection.getConnectionDatabase();
 
 const Validity = ({navigation}) => {
+
+  const {theme} = useContext(ThemeContext);
+  const themeLight = themes.light;
+  const themeDark = themes.dark;
 
   const [itemsOutOfExpirationCountEquipment, setItemsOutOfExpirationCountEquipment] = useState(0);
   const [itemsOutOfExpirationCountReagent, setItemsOutOfExpirationCountReagent] = useState(0);
@@ -28,7 +35,7 @@ const Validity = ({navigation}) => {
             resolve(count);
           },
           error => {
-            reject(error);
+            
           }
         );
       });
@@ -48,7 +55,7 @@ const Validity = ({navigation}) => {
             resolve(count);
           },
           error => {
-            reject(error);
+            
           }
         );
       });
@@ -71,7 +78,7 @@ const Validity = ({navigation}) => {
             resolve(count);
           },
           error => {
-            reject(error);
+            
           }
         );
       });
@@ -94,7 +101,7 @@ const Validity = ({navigation}) => {
             resolve(count);
           },
           error => {
-            reject(error);
+            
           }
         );
       });
@@ -121,32 +128,30 @@ const Validity = ({navigation}) => {
 }, [navigation]);
 
   return (
-    <View style={styles.card}>
+    <ThemeProvider theme={theme === 'light' ? themeLight : themeDark}>
         <View style={styles.miniHeader}>
-          <Text>Controle de Validade de estoque</Text>
+          <RegularText>Controle de Validade de estoque</RegularText>
           <TouchableOpacity
             onPress={()=>{navigation.navigate('RouteValidity')}}
           >
-          <Text>Exibir itens</Text>
+          <RegularText>Exibir itens</RegularText>
           </TouchableOpacity>
         </View>
-      <View style={{backgroundColor: '#DDD', borderRadius: 10, padding: 7, justifyContent: 'space-around', height: 130}}>
+      <Container>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text>Itens fora da validade</Text>
-          <Text>{itemsOutOfExpirationCountEquipment+itemsOutOfExpirationCountReagent}</Text>
+          <RegularText>Itens fora da validade</RegularText>
+          <RegularText>{itemsOutOfExpirationCountEquipment+itemsOutOfExpirationCountReagent}</RegularText>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text>Itens perto da validade</Text>
-          <Text>{itemsNearExpirationCountEquipment+itemsNearExpirationCountReagent}</Text>
+          <RegularText>Itens perto da validade</RegularText>
+          <RegularText>{itemsNearExpirationCountEquipment+itemsNearExpirationCountReagent}</RegularText>
         </View>
-      </View>
-    </View>
+      </Container>
+    </ThemeProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  card:{
-  },
   miniHeader:{
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -48,6 +48,7 @@ export default function RouteReagents({ navigation }){
             <StackReagents.Screen 
                 name="EditReagent" 
                 component={EditReagent}
+                options={{title: 'Editar Reagentes'}}
             />
 
       </StackReagents.Navigator>

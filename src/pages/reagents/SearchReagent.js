@@ -75,6 +75,9 @@ const SearchReagent = ({ navigation }) => {
       status = 'rgb(210, 210, 0)'
     }
     return(
+      <TouchableOpacity 
+            onPress={() => handleShowModal(item)}
+            >
       <View style={styles.item}>
         
         <View>
@@ -98,12 +101,13 @@ const SearchReagent = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+      </TouchableOpacity>
     )
   };
 
   return (
     <View>
-      <View>
+      <View style={{height: "100%"}}>
         <TextInput
           placeholder="Pesquise aqui"
           placeholderTextColor='rgb(200, 200, 200)'
@@ -114,21 +118,20 @@ const SearchReagent = ({ navigation }) => {
             padding:10
           }}
         />
-        <View style={{height: '93%' }}>
         <FlatList
           data={filteredData}
           extraData={data}
           renderItem={renderItem}
           keyExtractor={(_, index) => index.toString()}
         />
-        </View>
-      </View>
-      <TouchableOpacity
-        style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
+        <TouchableOpacity
+        style={{position: 'absolute', bottom: 50, right: 50, padding: 0}}
         onPress={()=>{navigation.navigate('RegisterReagent')}}
       >
           <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
       </TouchableOpacity>
+      </View>
+      
         <Modal
           visible={modalVisible}
           transparent={true}

@@ -25,6 +25,7 @@ import RouteSettings from './RouteSettings';
 const StackMain = createDrawerNavigator();
 
 export default function RouteMain(){
+
   const [theme, setTheme] = useState('light'); // Estado para controlar o tema
 
   const toggleTheme = () => {
@@ -59,7 +60,6 @@ export default function RouteMain(){
         <StackMain.Navigator 
           drawerContent={(props) => <DrawerTab {...props}
           screenOptions={{
-            cardStyleInterpolator: forFade,
           }}
       />}>
         <StackMain.Screen
@@ -68,19 +68,14 @@ export default function RouteMain(){
         options={{
           title: "Tela inicial",
           headerStyle: {
-            backgroundColor: "#54F000",
+            backgroundColor: `${theme=="dark" ? "#191919" : "#55f400"}`,
             shadowRadius: 30,
             shadowColor: '#000',
           },
-          headerTintColor: '#000',
+          headerTintColor: `${theme=="dark" ? "#FFF" : "#000"}`,
           headerTitleStyle: {
             fontWeight: 'bold'
           },
-          headerRight: ()=>(
-            <View style={{padding: 10}}>
-              <Feather name='help-circle' size={22} color='#000'/>
-            </View>
-          ),
           drawerIcon: ({color})=>(
             <Entypo name='home' size={22} color={color}/>
           ),
@@ -91,7 +86,8 @@ export default function RouteMain(){
           },
           drawerActiveTintColor: "#FFF",
           drawerActiveBackgroundColor: "#54B000",
-          drawerInactiveTintColor: "#333"
+          drawerInactiveTintColor: "#333",
+          
         }}
        />
        <StackMain.Screen

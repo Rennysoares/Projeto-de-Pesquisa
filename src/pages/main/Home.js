@@ -1,49 +1,82 @@
-import { React, useState, useEffect, useContext } from 'react';
-import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
+import { 
+  React, 
+  useState, 
+  useEffect, 
+  useContext 
+} from 'react';
+
+import { 
+  Text, 
+  View, 
+  StyleSheet, 
+  Image, 
+  ScrollView, 
+  TouchableOpacity
+} from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
-import {createTableReagents, createTableGlasswares, createTableEquipments} from '../../databases/DatabaseCreateTables'
+import {
+  createTableReagents,
+  createTableGlasswares, 
+  createTableEquipments
+} from '../../databases/DatabaseCreateTables';
+
 //Card personalizado
 import CardProduct from '../../components/CardProduct'
 import Validity from '../../components/Validity';
 import Graphic from '../../components/Graphic';
 
+import { 
+  Container, 
+  ContainerHeader, 
+  ContainerTextHeader, 
+  TitleTop, 
+  TitleNameApp, 
+  Subtitle, 
+  Text as RegularText
+} from '../../styles/main/StylesMain';
+
 import ThemeContext from '../../context/ThemeContext';
+import { ThemeProvider } from 'styled-components';
+import themes from '../../themes/Themes';
 
 export default function Home( { navigation }){
 
   const {theme} = useContext(ThemeContext);
+  const themeLight = themes.light;
+  const themeDark = themes.dark;
 
   useEffect(() => {
     createTableReagents();
     createTableGlasswares();
     createTableEquipments();
   }, []);
-
     return(
-      <View>
+      <ThemeProvider theme={theme === 'light' ? themeLight : themeDark}>
+      <Container>
         <ScrollView>
-        <View style={styles.conteinerHeader}>
+        <ContainerHeader>
           <LinearGradient
-          colors={['rgb(255, 255, 255)', "#54f000"]}
-          start={{x: 0, y: 0}}
-          end={{x: 0.5, y: 0.5}}
-          style={styles.linearGradient}
+            colors={[`${theme == "dark" ? "#000" : '#FFF'}`, "#54f000"]}
+            start={{x: 0, y: 1}}
+            end={{x: 1, y: 1}}
+            style={styles.linearGradient}
           />
-          <View style={styles.conteinerTextHeader}>
-            <Text style={styles.titleTop}>Bem vindo ao</Text>
-            <Text style={styles.titleNameApp}>SisLab Química</Text>
-            <Text style={styles.subtitle}>App para gerenciamento dos estoques do IFAM</Text>
-          </View>
+          <ContainerTextHeader>
+            <TitleTop>Bem vindo ao</TitleTop>
+            <TitleNameApp>SisLab Química</TitleNameApp>
+            <Subtitle>App para gerenciamento dos estoques do IFAM</Subtitle>
+          </ContainerTextHeader>
           <View style={styles.conteinerImage}>
             <Image
               style={{height: 100, width: 100}}
               source={require('../../../assets/iconhome.png')}
             />
           </View>
-        </View>
+        </ContainerHeader>
         
         <View style={styles.conteinerProducts}>
-          <Text>Selecione o tipo de produto a ser gerenciado:</Text>
+          <RegularText>Selecione o tipo de produto a ser gerenciado:</RegularText>
           <View style={styles.conteinerCards}>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
               <CardProduct
@@ -75,17 +108,12 @@ export default function Home( { navigation }){
           <Graphic navigation={navigation}/>
         </View>
         </ScrollView>
-      </View>
+      </Container>
+      </ThemeProvider>
     )
 }
 
 const styles = StyleSheet.create({
-    conteinerHeader:{
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        height: 170,
-    },
     linearGradient:{
         position: 'absolute',
         left: 0,
@@ -93,26 +121,8 @@ const styles = StyleSheet.create({
         top: 0,
         bottom: 0
     },
-    conteinerTextHeader:{
-        width: 180
-    },
     conteinerImage:{
         position: 'relative'
-    },
-    titleTop:{
-        color: '#000',
-        fontSize: 14
-    },
-    titleNameApp:{
-        color: '#000',
-        fontSize: 23,
-        fontWeight: 'bold',
-        paddingTop: 6,
-        paddingBottom: 6
-    },
-    subtitle:{
-        color: '#000',
-        fontSize: 11
     },
     conteinerProducts:{
         padding: 15
@@ -125,11 +135,6 @@ const styles = StyleSheet.create({
     },
     conteinerValidade:{
         padding: 15,
-    },
-    seta:{
-        height: 20,
-        width: 20,
-        marginHorizontal: 16,
     },
     conteinerGraficos:{
         alignItems: 'center'

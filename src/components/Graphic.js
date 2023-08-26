@@ -1,7 +1,9 @@
-import {React, useEffect, useState} from 'react';
+import {React, useEffect, useState, useContext} from 'react';
 import { View, Dimensions, Text} from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { DatabaseConnection } from '../databases/DatabaseConnection'; 
+
+import ThemeContext from '../context/ThemeContext';
 
 const dbreagent = DatabaseConnection.getConnectionDBReagent()
 const dbglassware = DatabaseConnection.getConnectionDBGlassware()
@@ -11,6 +13,9 @@ const database = DatabaseConnection.getConnectionDatabase();
 const screenWidth = Dimensions.get("window").width - 30;
 
 const Graphic = ({navigation}) => {
+
+  const {theme} = useContext(ThemeContext)
+
   const [reagent, setReagent] = useState(0)
   const [glassware, setGlassware] = useState(0)
   const [equipment, setEquipment] = useState(0)
@@ -27,10 +32,10 @@ const Graphic = ({navigation}) => {
   };
   
   const chartConfig = {
-    backgroundGradientFrom: "rgb(200, 200, 200)",
-    backgroundGradientTo: "rgb(200, 200, 200)",
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    backgroundGradientFrom: theme == "light" ? "#DDD" : "#222",
+    backgroundGradientTo: theme == "light" ? "#DDD" : "#222",
+    color: () => `${theme == "light" ? "#000" : "#FFF"}`,
+    labelColor: () => `${theme == "light" ? "#000" : "#FFF"}`,
     barPercentage: 1,
     useShadowColorFromDataset: false, // optional
     decimalPlaces: 0
@@ -56,11 +61,11 @@ const Graphic = ({navigation}) => {
       const getDataLengthGlassware = () => {
         database.transaction((tx) => {
           tx.executeSql(
-            'SELECT COUNT(*) as count FROM Capacidades',
+            'SELECT SUM(quantidade) AS total_quantidade FROM Capacidades',
             [],
-            (tx, results) => {
-              const len = results.rows.item(0).count;
-              setGlassware(len);
+            (_, {rows}) => {
+              const len = rows._array;
+              setGlassware(len[0]?.total_quantidade);
             },
             (error) => {
               console.log('Error querying data', error);

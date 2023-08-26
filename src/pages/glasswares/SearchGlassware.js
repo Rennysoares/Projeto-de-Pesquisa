@@ -88,7 +88,7 @@ const SearchGlassware = ({ navigation }) => {
         <Text style={styles.itemNome}>{item.nome}</Text>
         <Text style={styles.itemQuantidade}>{item.capacidade}</Text>
         <Text style={styles.itemQuantidade}>{`Quantidade: ${item.quantidade}`} unidades</Text>
-        <Text style={styles.itemDescricao}>{item.descricao}</Text>
+        {!item.descricao ? undefined : <Text style={styles.itemDescricao}>{item.descricao}</Text>}
       </View>
 
       <View style={{flexDirection: 'row', gap: 10}}>

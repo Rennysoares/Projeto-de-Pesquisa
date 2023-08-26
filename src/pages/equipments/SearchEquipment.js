@@ -4,7 +4,7 @@ import { consultEquipments } from '../../databases/DatabaseQueries';
 import { DatabaseConnection } from '../../databases/DatabaseConnection';
 import { AntDesign, Feather, Ionicons } from 'react-native-vector-icons';
 import { MaskedTextInput } from 'react-native-mask-text';
-
+import moment from 'moment';
 const database = DatabaseConnection.getConnectionDatabase();
 
 const SearchEquipment = ({navigation}) =>{
@@ -106,8 +106,8 @@ const SearchEquipment = ({navigation}) =>{
             <Text>Equipamento: {item.nome}</Text>
             </View>
             <Text>Quantidade: {item.quantidade}</Text>
-            <Text>Validade: {item.validade[8]+item.validade[9]+item.validade[7]+item.validade[5]+item.validade[6]+item.validade[4]+item.validade[0]+item.validade[1]+item.validade[2]+item.validade[3]}</Text>
-            <Text>Localização: {item.localizacao}</Text>
+            {item.validade == "Invalid date" ? undefined : <Text>Validade: {moment(item.validade, "YYYY/MM/DD").format("DD-MM-YYYY")}</Text>}
+            {!item.localizacao ? undefined : <Text>Localização: {item.localizacao}</Text>}
           </View>
 
           <View style={{flexDirection: 'row', gap: 10}}>
@@ -146,7 +146,7 @@ const SearchEquipment = ({navigation}) =>{
             </View>
             <TouchableOpacity
               style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
-              onPress={()=>{navigation.navigate('RegisterEquipments')}}
+              onPress={()=>{navigation.navigate('RegisterEquipment')}}
             >
                 <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
             </TouchableOpacity>

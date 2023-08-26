@@ -3,7 +3,7 @@ import ThemeContext from '../../context/ThemeContext';
 
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity, Button} from 'react-native';
 
-import { Container, SectionConfig, SectionItem, TitleConfig, DescConfig, HorizontalRow } from '../../styles/StylesConfigs';
+import { Container, SectionConfig, SectionItem, TitleConfig, DescConfig, HorizontalRow } from '../../styles/settings/StylesSettings';
 
 import { ThemeProvider } from 'styled-components';
 import themes from '../../themes/Themes';

@@ -1,20 +1,24 @@
-import React from 'react'
+import React,  {useContext} from 'react'
 import {Text,View,StyleSheet,Image, TouchableOpacity} from 'react-native';
-
 // Este e o componente que sera reaproveitada no arquivo do app principal
 
+import ThemeContext from '../context/ThemeContext';
+
 export default function CardProduct( { navigation, tipoProduto, src, teladenav }){
+
+  const {theme} = useContext(ThemeContext);
+  
   return(
     <View>
     <TouchableOpacity
       onPress={()=>{navigation.navigate(teladenav)}}
     >
-    <View style={styles.cardConteiner}>
+    <View style={[styles.cardConteiner, {backgroundColor: `${theme=="light" ? "#DDD" : "#222"}`}]}>
       <Image
       source={src}
       style={styles.img}
       />
-      <Text style={styles.txtCard}>{tipoProduto}</Text>
+      <Text style={[styles.txtCard, {color: `${theme=="light" ? "#000" : "#FFF"}`}]}>{tipoProduto}</Text>
     </View>
     </TouchableOpacity>
     </View>

@@ -166,6 +166,18 @@ export default function EditReagent({route, navigation}){
             <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Adicionar Frascos</Text>
           </View>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={()=>{}}
+        >
+          <View style={styles.button}>
+          <Image
+                source={require("../../../assets/iconremove.png")}
+                style={{height: 70, width: 70}}
+            />
+            <Text style={{fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>Remover Quantidade</Text>
+          </View>
+        </TouchableOpacity>
       </View>
       <View style={{gap: 10, padding: 10, borderColor: '#000', borderWidth: 1, margin: 10}}>
         <Text style={{fontSize: 16, textAlign: 'center'}}>Informações do Reagente</Text>

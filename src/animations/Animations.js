@@ -7,7 +7,7 @@ export const forFade = ({ current }) => ({
     },
 });
 
-export const forSlide = ({ current, next, inverted, layouts: { screen } }) => {
+export const forHorizontalSlide = ({ current, next, inverted, layouts: { screen } }) => {
     const progress = Animated.add(
       current.progress.interpolate({
         inputRange: [0, 1],
@@ -22,9 +22,10 @@ export const forSlide = ({ current, next, inverted, layouts: { screen } }) => {
           })
         : 0
     );
-  
+
     return {
       cardStyle: {
+        backgroundColor: '#000',
         transform: [
           {
             translateX: Animated.multiply(
@@ -42,14 +43,37 @@ export const forSlide = ({ current, next, inverted, layouts: { screen } }) => {
           },
         ],
       },
-      shadowStyle:{
-        backgroundColor: '#000'
+      shadowStyle: {
+        shadowColor: '#000',
+        shadowOpacity: 0,
+        shadowRadius: 5,
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
       },
       overlayStyle:{
-        backgroundColor: 'rgba(0, 0, 0, 0.1)'
+        backgroundColor: 'rgba(0, 0, 0, 0.0)'
       },
-      containerStyle:{
-        backgroundColor: 'rgba(0, 0, 0, 0)'
+      containerStyle: {
+        backgroundColor: 'transparent',
+      },
+
+    };
+  };
+
+export const forVerticalSlide = ({ current, layouts }) => {
+    return {
+      cardStyle: {
+        backgroundColor: 'black',
+        transform: [
+          {
+            translateY: current.progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [layouts.screen.height, 0],
+            }),
+          },
+        ],
       },
     };
   };

@@ -1,8 +1,13 @@
-import React from "react";
+import React, {useContext} from "react";
 import {View, Text, Linking, StyleSheet, ImageBackground} from "react-native";
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
 
+import ThemeContext from "../context/ThemeContext";
+
 export default function DrawerTab(props){
+
+    const { theme } = useContext(ThemeContext)
+
     return(
         <View style={{flex: 1}}>
         <DrawerContentScrollView {...props} contentContainerStyle={{backgroundColor:"#54D700"}}>
@@ -23,8 +28,8 @@ export default function DrawerTab(props){
             </View>
         </DrawerContentScrollView>
         <View style={{padding: 20}}>
-            <Text>GitHub</Text>
-            <Text>Desenvolvido para o IFAM </Text>
+            {/*<Text>GitHub</Text>*/}
+            <Text>Desenvolvido para o IFAM Campus Parintins</Text>
         </View>
         </View>
     )

@@ -1,12 +1,12 @@
 import { React, useContext } from 'react';
-import { Image, TouchableOpacity} from 'react-native';
+import { View, Image, TouchableOpacity, } from 'react-native';
 import { createStackNavigator} from '@react-navigation/stack';
-import { forFade, forSlide } from '../animations/Animations';
+import { forFade, forHorizontalSlide, forVerticalSlide, } from '../animations/Animations';
 import Settings from '../pages/settings/Settings';
 import Theme_custom from '../pages/settings/Theme_custom';
 const StackSettings = createStackNavigator();
 import ThemeContext from '../context/ThemeContext';
-
+import { TransitionPresets } from '@react-navigation/stack';
 
 export default function RouteSettings({navigation}){
 
@@ -22,7 +22,6 @@ export default function RouteSettings({navigation}){
         headerTitleStyle: {
           fontWeight: 'bold',
         },
-        cardStyleInterpolator: forSlide 
       }}
       
     >
@@ -30,6 +29,7 @@ export default function RouteSettings({navigation}){
         name="Settings"
         component={Settings}
         options={{
+          cardStyleInterpolator: forFade,
           title: 'Configurações',
           headerLeft:()=>(
             <TouchableOpacity
@@ -52,6 +52,7 @@ export default function RouteSettings({navigation}){
         component={Theme_custom}
         options={{
           title: 'Temas e customização',
+          cardStyleInterpolator: forFade,
         }}
        />
     </StackSettings.Navigator>
