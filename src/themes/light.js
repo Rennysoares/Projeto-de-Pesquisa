@@ -4,4 +4,5 @@ export default {
     backgroundContainer: 'rgb(240, 240, 240)',
     backgroundItem: 'rgb(250, 250, 250)',
     backgroundComponents: '#DDD',
+    backgoundPureContainer: '#FFF'
 }

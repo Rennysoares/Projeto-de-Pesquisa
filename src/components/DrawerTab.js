@@ -1,43 +1,47 @@
-import React, {useContext} from "react";
-import {View, Text, Linking, StyleSheet, ImageBackground} from "react-native";
+import React, { useContext } from "react";
+import { View, Text, Linking, StyleSheet, ImageBackground } from "react-native";
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
-
+import { RegularText } from "../styles/CommonStyles";
+import { ContainerListItems, Container } from "../styles/components/StylesDrawerTab";
 import ThemeContext from "../context/ThemeContext";
+import { ThemeProvider } from "styled-components";
+import themes from "../themes/Themes";
+export default function DrawerTab(props) {
 
-export default function DrawerTab(props){
+    const { theme } = useContext(ThemeContext);
+    const themeLight = themes.light;
+    const themeDark = themes.dark;
 
-    const { theme } = useContext(ThemeContext)
-
-    return(
-        <View style={{flex: 1}}>
-        <DrawerContentScrollView {...props} contentContainerStyle={{backgroundColor:"#54D700"}}>
-        <ImageBackground
-                source={require("../../assets/menu-bg.jpeg")}
-                padding={10}
-            >
-                <View style={{height: 200}}>
-                    
-                </View>
-            </ImageBackground>
-            <View style={{flex: 1, backgroundColor: "#FFF", paddingTop: 10}}>
-                <DrawerItemList {...props} />
-                {/*<DrawerItem
+    return (
+        <ThemeProvider theme={theme === 'light' ? themeLight : themeDark}>
+            <Container>
+                <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: "#54D700" }}>
+                    <ImageBackground
+                        source={require("../../assets/menu-bg.jpeg")}
+                        padding={10}
+                    >
+                        <View style={{ height: 200 }}/>
+                    </ImageBackground>
+                    <ContainerListItems>
+                        <DrawerItemList {...props} />
+                        {/*<DrawerItem
                     label="Ajuda"
                     onPress={() => Linking.openURL('https://mywebsite.com/help')}
                 />*/}
-            </View>
-        </DrawerContentScrollView>
-        <View style={{padding: 20}}>
-            {/*<Text>GitHub</Text>*/}
-            <Text>Desenvolvido para o IFAM Campus Parintins</Text>
-        </View>
-        </View>
+                    </ContainerListItems>
+                </DrawerContentScrollView>
+                <View style={{ padding: 20 }}>
+                    {/*<Text>GitHub</Text>*/}
+                    <RegularText>Desenvolvido para o IFAM Campus Parintins</RegularText>
+                </View>
+            </Container>
+        </ThemeProvider>
     )
 }
 
 const styles = StyleSheet.create({
-    containerTop:{
+    containerTop: {
         height: 300,
-        backgroundColor:"rgb(0, 200,0)"
+        backgroundColor: "rgb(0, 200,0)"
     }
 })

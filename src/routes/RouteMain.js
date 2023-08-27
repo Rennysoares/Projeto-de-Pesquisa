@@ -55,39 +55,41 @@ export default function RouteMain(){
       });
   }, [theme]);
 
+  const ControllerColor = (dark, light) => {
+    return theme=="dark" ? dark : light
+  }
     return(
       <ThemeContext.Provider value={{theme, toggleTheme}}>
         <StackMain.Navigator 
-          drawerContent={(props) => <DrawerTab {...props}
+          drawerContent={(props) => <DrawerTab {...props}/>}
           screenOptions={{
+            headerStyle: {
+              backgroundColor: `${ControllerColor("#191919", "#55f400")}`,
+              shadowRadius: 30,
+              shadowColor: '#000',
+            },
+            headerTintColor: `${ControllerColor("#fff", "#000")}`,
+            headerTitleStyle: {
+              fontWeight: 'bold'
+            },
+            drawerLabelStyle:{
+              marginLeft: -20,
+              fontWeight: 'bold',
+              fontSize: 15
+            },
+            drawerActiveTintColor: "#FFF",
+            drawerActiveBackgroundColor: "#54B000",
+            drawerInactiveTintColor: `${ControllerColor("#aaa", "#555")}`,
           }}
-      />}>
+          >
         <StackMain.Screen
         name="Home"
         component={Home}
         options={{
           title: "Tela inicial",
-          headerStyle: {
-            backgroundColor: `${theme=="dark" ? "#191919" : "#55f400"}`,
-            shadowRadius: 30,
-            shadowColor: '#000',
-          },
-          headerTintColor: `${theme=="dark" ? "#FFF" : "#000"}`,
-          headerTitleStyle: {
-            fontWeight: 'bold'
-          },
           drawerIcon: ({color})=>(
             <Entypo name='home' size={22} color={color}/>
-          ),
-          drawerLabelStyle:{
-            marginLeft: -20,
-            fontWeight: 'bold',
-            fontSize: 15
-          },
-          drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000",
-          drawerInactiveTintColor: "#333",
-          
+          )
         }}
        />
        <StackMain.Screen
@@ -97,9 +99,6 @@ export default function RouteMain(){
           headerShown: false,
           title: 'Reagentes', 
           drawerIcon: ({color})=>(<Entypo name='list' size={22} color={color}/>),
-          drawerLabelStyle:{marginLeft: -20},
-          drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000"
         }}
        />
        <StackMain.Screen
@@ -109,9 +108,6 @@ export default function RouteMain(){
           headerShown: false,
           title: 'Vidrarias', 
           drawerIcon: ({color})=>(<Entypo name='list' size={22} color={color}/>),
-          drawerLabelStyle:{marginLeft: -20},
-          drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000"
         }}
        />
        <StackMain.Screen
@@ -121,9 +117,6 @@ export default function RouteMain(){
           headerShown: false,
           title: 'Equipamentos',
           drawerIcon: ({color})=>(<Entypo name='list' size={22} color={color}/>),
-          drawerLabelStyle:{marginLeft: -20},
-          drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000"
         }}
        />
        <StackMain.Screen
@@ -132,9 +125,6 @@ export default function RouteMain(){
         options={{
           title: 'Controle de validade',
           drawerIcon: ({color})=>(<AntDesign name='clockcircleo' size={22} color={color}/>),
-          drawerLabelStyle:{marginLeft: -20},
-          drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000"
         }}
        />
        <StackMain.Screen
@@ -144,9 +134,6 @@ export default function RouteMain(){
           title: 'Configurações',
           headerShown: false,
           drawerIcon: ({color})=>(<Ionicons name='settings-sharp' size={22} color={color}/>),
-          drawerLabelStyle:{marginLeft: -20},
-          drawerActiveTintColor: "#FFF",
-          drawerActiveBackgroundColor: "#54B000",
         }}
        />
       </StackMain.Navigator>

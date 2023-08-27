@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+
 import RouteMain from './src/routes/RouteMain';
 
 export default function App() {
