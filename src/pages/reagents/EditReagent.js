@@ -71,7 +71,7 @@ export default function EditReagent({route, navigation}){
     
       tx.executeSql(
         'UPDATE lote SET numero = ?, validade = ?, localizacao = ? WHERE id = ?;',
-        [lote, validade, localizacao, id_params],
+        [lote, moment(validade, "DD-MM-YYYY").format("YYYY-MM-DD"), localizacao, id_params],
         (_, result) => {
         },
         (_, error) => {
@@ -254,7 +254,7 @@ export default function EditReagent({route, navigation}){
                 placeholder="Ex: 01-01-2021"
                 placeholderTextColor='rgb(200, 200, 200)'
                 onChangeText={setValidade}
-                value={validade_params}
+                value={moment(validade_params, "YYYY/MM/DD").format("DD-MM-YYYY")}
                 keyboardType="numeric"
                 style={styles.txtInput}
               />

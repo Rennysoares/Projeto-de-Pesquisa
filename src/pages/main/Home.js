@@ -42,7 +42,7 @@ import themes from '../../themes/Themes';
 
 export default function Home( { navigation }){
 
-  const {theme} = useContext(ThemeContext);
+  const {theme, color} = useContext(ThemeContext);
   const themeLight = themes.light;
   const themeDark = themes.dark;
 
@@ -51,13 +51,14 @@ export default function Home( { navigation }){
     createTableGlasswares();
     createTableEquipments();
   }, []);
+
     return(
       <ThemeProvider theme={theme === 'light' ? themeLight : themeDark}>
       <Container>
         <ScrollView>
         <ContainerHeader>
           <LinearGradient
-            colors={[`${theme == "dark" ? "#000" : '#FFF'}`, "#54f000"]}
+            colors={[`${theme == "dark" ? "#000" : '#FFF'}`, color]}
             start={{x: 0, y: 1}}
             end={{x: 1, y: 1}}
             style={styles.linearGradient}

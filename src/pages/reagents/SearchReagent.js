@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView, TextInput } from 'react-native';
 import { DatabaseConnection } from '../../databases/DatabaseConnection';
 import moment from 'moment';
 import { consultReagents } from '../../databases/DatabaseQueries';
 import { AntDesign, Ionicons, Feather } from 'react-native-vector-icons';
+import ThemeContext from '../../context/ThemeContext';
 
-const database = DatabaseConnection.getConnectionDatabase()
+const database = DatabaseConnection.getConnectionDatabase();
 
 const SearchReagent = ({ navigation }) => {
+
+  const {theme, color} = useContext(ThemeContext);
 
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -128,7 +131,7 @@ const SearchReagent = ({ navigation }) => {
         style={{position: 'absolute', bottom: 50, right: 50, padding: 0}}
         onPress={()=>{navigation.navigate('RegisterReagent')}}
       >
-          <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
+          <AntDesign name="pluscircle" size={65} color={color}/>
       </TouchableOpacity>
       </View>
       

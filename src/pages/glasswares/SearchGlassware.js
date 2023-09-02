@@ -105,6 +105,7 @@ const SearchGlassware = ({ navigation }) => {
 
   return (
     <View>
+      <View style={{height: "100%"}}>
       <TextInput
           placeholder="Pesquise aqui"
           placeholderTextColor='rgb(200, 200, 200)'
@@ -115,12 +116,17 @@ const SearchGlassware = ({ navigation }) => {
             padding:10
           }}
         />
-        <View style={{height: '93%' }}>
         <FlatList
           data={filteredData}
           renderItem={renderVidrariaItem}
           keyExtractor={(_, item) => item.toString()}
         />
+        <TouchableOpacity
+        style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
+        onPress={()=>{navigation.navigate('RegisterGlassware')}}
+          >
+          <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
+        </TouchableOpacity>
         </View>
         <Modal
           visible={modalVisible2}
@@ -184,12 +190,7 @@ const SearchGlassware = ({ navigation }) => {
           </View>
           </View>
         </Modal>
-        <TouchableOpacity
-        style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
-        onPress={()=>{navigation.navigate('RegisterGlassware')}}
-          >
-          <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
-        </TouchableOpacity>
+        
     </View>
   );
 };

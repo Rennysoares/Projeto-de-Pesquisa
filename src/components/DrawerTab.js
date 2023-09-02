@@ -8,19 +8,20 @@ import { ThemeProvider } from "styled-components";
 import themes from "../themes/Themes";
 export default function DrawerTab(props) {
 
-    const { theme } = useContext(ThemeContext);
+    const { theme, color } = useContext(ThemeContext);
     const themeLight = themes.light;
     const themeDark = themes.dark;
 
     return (
         <ThemeProvider theme={theme === 'light' ? themeLight : themeDark}>
             <Container>
-                <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: "#54D700" }}>
+                <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: color }}>
                     <ImageBackground
                         source={require("../../assets/menu-bg.jpeg")}
                         padding={10}
+                        opacity={0.3}
                     >
-                        <View style={{ height: 200 }}/>
+                        <View style={{ height: 200, color: color }}/>
                     </ImageBackground>
                     <ContainerListItems>
                         <DrawerItemList {...props} />

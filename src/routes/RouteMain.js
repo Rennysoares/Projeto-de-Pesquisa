@@ -1,16 +1,15 @@
 //Importações dos Core Components do React e do React Native
 import { React, useState, useEffect } from 'react';
-import { View } from 'react-native';
-import { Entypo, Ionicons, Feather, AntDesign } from 'react-native-vector-icons';
-import { forFade, forSlide } from '../animations/Animations';
-
-import * as SecureStorage from 'expo-secure-store';
-
-const SECURE_STORAGE_KEY = 'selectedTheme';
+import { Entypo, Ionicons, AntDesign } from 'react-native-vector-icons';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import ThemeContext from '../context/ThemeContext';
+
+import * as SecureStorage from 'expo-secure-store';
+
+const SECURE_STORAGE_KEY = 'selectedTheme';
+const SECURE_STORAGE_KEY2 = 'selectedColor';
 
 //Import Main Screens
 import Home from '../pages/main/Home';
@@ -26,12 +25,18 @@ const StackMain = createDrawerNavigator();
 
 export default function RouteMain(){
 
-  const [theme, setTheme] = useState('light'); // Estado para controlar o tema
+  const [theme, setTheme] = useState('light');
+  const [color, setColor] = useState('#55f400'); // Estado para controlar o tema
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
   };
+
+  const settingColor = (paramColor) => {
+    const newColor = paramColor;
+    setColor(newColor)
+  }
 
   useEffect(() => {
     async function loadStoredTheme() {
@@ -55,30 +60,50 @@ export default function RouteMain(){
       });
   }, [theme]);
 
+  useEffect(() => {
+    async function loadStoredColor() {
+      try {
+        const storedColor = await SecureStorage.getItemAsync(SECURE_STORAGE_KEY2);
+        if (storedColor) {
+          setColor(storedColor);
+        }
+      } catch (error) {
+        console.error('Error loading stored color', error);
+      }
+    }
+
+    loadStoredColor();
+  }, []);
+
+  useEffect(() => {
+    SecureStorage.setItemAsync(SECURE_STORAGE_KEY2, color)
+      .catch(error => {
+        console.error('Error saving theme', error);
+      });
+  }, [color]);
+
   const ControllerColor = (dark, light) => {
     return theme=="dark" ? dark : light
   }
+  
     return(
-      <ThemeContext.Provider value={{theme, toggleTheme}}>
+      <ThemeContext.Provider value={{theme, toggleTheme, color, settingColor}}>
         <StackMain.Navigator 
           drawerContent={(props) => <DrawerTab {...props}/>}
           screenOptions={{
             headerStyle: {
-              backgroundColor: `${ControllerColor("#191919", "#55f400")}`,
+              backgroundColor: `${ControllerColor("#191919", color)}`,
               shadowRadius: 30,
               shadowColor: '#000',
             },
             headerTintColor: `${ControllerColor("#fff", "#000")}`,
-            headerTitleStyle: {
-              fontWeight: 'bold'
-            },
             drawerLabelStyle:{
               marginLeft: -20,
               fontWeight: 'bold',
               fontSize: 15
             },
             drawerActiveTintColor: "#FFF",
-            drawerActiveBackgroundColor: "#54B000",
+            drawerActiveBackgroundColor: color,
             drawerInactiveTintColor: `${ControllerColor("#aaa", "#555")}`,
           }}
           >

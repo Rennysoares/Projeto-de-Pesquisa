@@ -1,19 +1,32 @@
-import { React } from 'react';
+import { React, useContext } from 'react';
 import { Image, TouchableOpacity} from 'react-native';
 import { forFade } from '../animations/Animations';
 import SearchReagent from '../pages/reagents/SearchReagent';
 import RegisterReagent from '../pages/reagents/RegisterReagent';
 import EditReagent from '../pages/reagents/EditReagent';
-
+import ThemeContext from '../context/ThemeContext';
 import { createStackNavigator } from '@react-navigation/stack';
 const StackReagents = createStackNavigator();
 
 export default function RouteReagents({ navigation }){
+
+    const { theme, color } = useContext(ThemeContext)
+
+    const ControllerColor = (dark, light) => {
+        return theme=="dark" ? dark : light
+      }
+
     return(
         <StackReagents.Navigator
             initialRouteName="Home"
             screenOptions={{
-                cardStyleInterpolator: forFade 
+                cardStyleInterpolator: forFade,
+                headerStyle: {
+                    backgroundColor: `${ControllerColor("#191919", color)}`,
+                    shadowRadius: 30,
+                    shadowColor: '#000',
+                  },
+                  headerTintColor: `${ControllerColor("#fff", "#000")}`,
             }}
             >
 
