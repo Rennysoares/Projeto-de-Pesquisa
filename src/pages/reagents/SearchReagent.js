@@ -5,7 +5,12 @@ import moment from 'moment';
 import { consultReagents } from '../../databases/DatabaseQueries';
 import { AntDesign, Ionicons, Feather } from 'react-native-vector-icons';
 import ThemeContext from '../../context/ThemeContext';
-
+import {
+  RegularText,
+  ContainerSearch,
+  FlatItem,
+  TextInputContainer
+} from '../../styles/CommonStyles'
 const database = DatabaseConnection.getConnectionDatabase();
 
 const SearchReagent = ({ navigation }) => {
@@ -17,6 +22,7 @@ const SearchReagent = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible2, setModalVisible2] = useState(false);
+  const basedColor = theme == 'dark' ? '#FFF': '#000';
 
   const handleSearch = (text) => {
     const filteredItems = data.filter((item) => {
@@ -70,7 +76,7 @@ const SearchReagent = ({ navigation }) => {
   }, [navigation]);
 
   const renderItem = ({ item }) => {
-    let status = 'rgb(0, 0, 0)'
+    let status = basedColor;
     if (parseFloat(item.quantidade_geral) < (parseFloat(item.quantidade_unitario) * parseFloat(item.quantidade_frascos))*(5/100) ){
       status = 'rgb(255, 0, 0)'
     }
@@ -81,46 +87,43 @@ const SearchReagent = ({ navigation }) => {
       <TouchableOpacity 
             onPress={() => handleShowModal(item)}
             >
-      <View style={styles.item}>
+      <FlatItem>
         
         <View>
           <View style={{width: 250, overflow: 'hidden'}}>
-            <Text>Reagente: {item.nome}</Text>
+            <RegularText>Reagente: {item.nome}</RegularText>
           </View>
           <Text>
-            <Text>Quantidade Geral: </Text>
-            <Text style={{color: status}}>{item.quantidade_geral + item.unidade_medida}</Text>
+            <RegularText>Quantidade Geral: </RegularText>
+            <RegularText style={{color: status}}>{item.quantidade_geral + item.unidade_medida}</RegularText>
           </Text>
-          <Text>Validade: {moment(item.validade, "YYYY/MM/DD").format("DD-MM-YYYY")}</Text>
+          <RegularText>Validade: {moment(item.validade, "YYYY/MM/DD").format("DD-MM-YYYY")}</RegularText>
         </View>
         <View>
           <TouchableOpacity 
             onPress={() => handleShowModal(item)}
             >
-            <Image
-            source={require('../../../assets/iconmore.png')}
-            style={{height: 50, width: 50}}
-            />
+            <Feather name="more-horizontal" size={50} color={basedColor}/>
           </TouchableOpacity>
         </View>
-      </View>
+      </FlatItem>
       </TouchableOpacity>
     )
   };
 
   return (
     <View>
-      <View style={{height: "100%"}}>
-        <TextInput
-          placeholder="Pesquise aqui"
-          placeholderTextColor='rgb(200, 200, 200)'
-          onChangeText={handleSearch}
-          style={{
-            backgroundColor: 'rgb(255, 255, 255)',
-            margin: 4,
-            padding:10
-          }}
-        />
+      <ContainerSearch>
+        <TextInputContainer>
+          <TextInput
+            placeholder="Pesquise aqui"
+            placeholderTextColor='rgb(200, 200, 200)'
+            onChangeText={handleSearch}
+            style={{
+              padding:10
+            }}
+          />
+        </TextInputContainer>
         <FlatList
           data={filteredData}
           extraData={data}
@@ -133,7 +136,7 @@ const SearchReagent = ({ navigation }) => {
       >
           <AntDesign name="pluscircle" size={65} color={color}/>
       </TouchableOpacity>
-      </View>
+      </ContainerSearch>
       
         <Modal
           visible={modalVisible}

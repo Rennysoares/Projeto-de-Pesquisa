@@ -7,16 +7,20 @@ import EditReagent from '../pages/reagents/EditReagent';
 import ThemeContext from '../context/ThemeContext';
 import { createStackNavigator } from '@react-navigation/stack';
 const StackReagents = createStackNavigator();
-
+import themes from '../themes/Themes';
+import { ThemeProvider } from 'styled-components';
 export default function RouteReagents({ navigation }){
 
-    const { theme, color } = useContext(ThemeContext)
+    const { theme, color } = useContext(ThemeContext);
+    const themeLight = themes.light;
+    const themeDark = themes.dark;
 
     const ControllerColor = (dark, light) => {
         return theme=="dark" ? dark : light
       }
 
     return(
+        <ThemeProvider theme={theme === 'light' ? themeLight : themeDark}>
         <StackReagents.Navigator
             initialRouteName="Home"
             screenOptions={{
@@ -63,7 +67,7 @@ export default function RouteReagents({ navigation }){
                 component={EditReagent}
                 options={{title: 'Editar Reagentes'}}
             />
-
       </StackReagents.Navigator>
+      </ThemeProvider>
     )
 }
