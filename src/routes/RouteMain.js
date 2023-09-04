@@ -5,11 +5,13 @@ import { Entypo, Ionicons, AntDesign } from 'react-native-vector-icons';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import ThemeContext from '../context/ThemeContext';
-
+import StockConfigContext from '../context/StockConfigContext';
 import * as SecureStorage from 'expo-secure-store';
 
 const SECURE_STORAGE_KEY = 'selectedTheme';
 const SECURE_STORAGE_KEY2 = 'selectedColor';
+const SECURE_STORAGE_KEY3 = 'lowStock';
+const SECURE_STORAGE_KEY4 = 'expirationThreshold';
 
 //Import Main Screens
 import Home from '../pages/main/Home';
@@ -26,7 +28,8 @@ const StackMain = createDrawerNavigator();
 export default function RouteMain(){
 
   const [theme, setTheme] = useState('light');
-  const [color, setColor] = useState('#55f400'); // Estado para controlar o tema
+  const [color, setColor] = useState('#55f400');
+  const [lowStock, setLowStock] = useState('50');
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -37,6 +40,33 @@ export default function RouteMain(){
     const newColor = paramColor;
     setColor(newColor)
   }
+
+  const settingRange = (paramRange) => {
+    const newRange = paramRange;
+    setLowStock(newRange)
+  }
+
+  useEffect(() => {
+    async function loadStoredRange() {
+      try {
+        const storedRange = await SecureStorage.getItemAsync(SECURE_STORAGE_KEY3);
+        if (storedRange) {
+          setLowStock(storedRange);
+        }
+      } catch (error) {
+        console.error('Error loading stored theme', error);
+      }
+    }
+
+    loadStoredRange();
+  }, []);
+
+  useEffect(() => {
+    SecureStorage.setItemAsync(SECURE_STORAGE_KEY3, lowStock)
+      .catch(error => {
+        console.error('Error saving lowStock', error);
+      });
+  }, [lowStock]);
 
   useEffect(() => {
     async function loadStoredTheme() {
@@ -88,6 +118,7 @@ export default function RouteMain(){
   
     return(
       <ThemeContext.Provider value={{theme, toggleTheme, color, settingColor}}>
+        <StockConfigContext.Provider value={{lowStock, settingRange}}>
         <StackMain.Navigator 
           drawerContent={(props) => <DrawerTab {...props}/>}
           screenOptions={{
@@ -162,6 +193,7 @@ export default function RouteMain(){
         }}
        />
       </StackMain.Navigator>
+      </StockConfigContext.Provider>
       </ThemeContext.Provider>
     )
 }

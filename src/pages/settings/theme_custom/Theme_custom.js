@@ -25,7 +25,7 @@ export default function Theme_custom({ navigation }) {
                         <TouchableOpacity onPress={()=>{navigation.navigate("SelectColor")}}>
                             <SectionItem>
                                 <TitleConfig>Personalizar cores</TitleConfig>
-                                <DescConfig>Configurar uma faixa de data para que o sistema possa detectar itens vencidos</DescConfig>
+                                <DescConfig>Configure uma cor padrão para o aplicativo e elementos</DescConfig>
                             </SectionItem>
                         </TouchableOpacity>
                     </SectionConfig>

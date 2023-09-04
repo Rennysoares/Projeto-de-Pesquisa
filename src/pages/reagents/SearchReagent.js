@@ -10,12 +10,15 @@ import {
   ContainerSearch,
   FlatItem,
   TextInputContainer
-} from '../../styles/CommonStyles'
+} from '../../styles/CommonStyles';
+import StockConfigContext from '../../context/StockConfigContext';
+
 const database = DatabaseConnection.getConnectionDatabase();
 
 const SearchReagent = ({ navigation }) => {
 
   const {theme, color} = useContext(ThemeContext);
+  const { lowStock } = useContext(StockConfigContext);
 
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -80,7 +83,7 @@ const SearchReagent = ({ navigation }) => {
     if (parseFloat(item.quantidade_geral) < (parseFloat(item.quantidade_unitario) * parseFloat(item.quantidade_frascos))*(5/100) ){
       status = 'rgb(255, 0, 0)'
     }
-    else if (parseFloat(item.quantidade_geral) <= (parseFloat(item.quantidade_unitario) * parseFloat(item.quantidade_frascos))/2){
+    else if (parseFloat(item.quantidade_geral) <= (parseFloat(item.quantidade_unitario) * parseFloat(item.quantidade_frascos))*(lowStock/100)){
       status = 'rgb(210, 210, 0)'
     }
     return(

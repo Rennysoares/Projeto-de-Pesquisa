@@ -25,11 +25,10 @@ export default function ModalPickerColor({navigation}) {
                 <Colors color='#e88334' />
                 <Colors color='#4595ec' />
                 <Colors color='#9946c7' />
-                <Colors color='#70b949' />
+                <Colors color='#60b919' />
                 <Colors color='#d9639e' />
                 <Colors color='#8f36aa' />
             </ContainerColors>
-            <Colors color={color} />
         </Container>
     )
 }

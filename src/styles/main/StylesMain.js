@@ -14,7 +14,7 @@ export const ContainerHeader = styled.View`
 `;
 
 export const ContainerTextHeader = styled.View`
-    width: 180px;
+    width: 50%
 `;
 
 export const TitleTop = styled.Text`
