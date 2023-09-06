@@ -5,12 +5,21 @@ import moment from 'moment';
 import { consultReagents } from '../../databases/DatabaseQueries';
 import { AntDesign, Ionicons, Feather } from 'react-native-vector-icons';
 import ThemeContext from '../../context/ThemeContext';
+
 import {
   RegularText,
   ContainerSearch,
   FlatItem,
   TextInputContainer
 } from '../../styles/CommonStyles';
+
+import {
+  CenterModal,
+  ContainerModalData,
+  NameReagent,
+  InformationText
+} from '../../styles/reagents/StylesReagents';
+
 import StockConfigContext from '../../context/StockConfigContext';
 
 const database = DatabaseConnection.getConnectionDatabase();
@@ -94,7 +103,7 @@ const SearchReagent = ({ navigation }) => {
         
         <View>
           <View style={{width: 250, overflow: 'hidden'}}>
-            <RegularText>Reagente: {item.nome}</RegularText>
+            <RegularText>{item.nome}</RegularText>
           </View>
           <Text>
             <RegularText>Quantidade Geral: </RegularText>
@@ -117,12 +126,13 @@ const SearchReagent = ({ navigation }) => {
   return (
     <View>
       <ContainerSearch>
-        <TextInputContainer>
+        <TextInputContainer style={{marginVertical: 5, marginHorizontal: 16}}>
           <TextInput
             placeholder="Pesquise aqui"
             placeholderTextColor='rgb(200, 200, 200)'
             onChangeText={handleSearch}
             style={{
+              color: basedColor,
               padding:10
             }}
           />
@@ -134,7 +144,7 @@ const SearchReagent = ({ navigation }) => {
           keyExtractor={(_, index) => index.toString()}
         />
         <TouchableOpacity
-        style={{position: 'absolute', bottom: 50, right: 50, padding: 0}}
+        style={{position: 'absolute', bottom: 70, right: 30, padding: 0}}
         onPress={()=>{navigation.navigate('RegisterReagent')}}
       >
           <AntDesign name="pluscircle" size={65} color={color}/>
@@ -147,46 +157,52 @@ const SearchReagent = ({ navigation }) => {
           animationType="fade"
           onRequestClose={() => setModalVisible(false)}
         >
-        <View style={styles.centermodal}>
-          <View style={styles.modal}>
+        <CenterModal>
+          <ContainerModalData>
             <View style={{
               rowGap: 7
             }}>
-
               <ScrollView style={{height: 350}}>
               <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
-                <Image source={require("../../../assets/reagenticon.png")} style={{height: 55, width: 55}}/>
-                <Text style={{fontSize: 18, width:190, fontWeight: 'bold'}}>{selectedItem?.nome}</Text>
+                <Image 
+                source={
+                  theme == 'dark' 
+                  ? require("../../../assets/reagenticondark.png") 
+                  : require("../../../assets/reagenticonlight.png")
+                } 
+                style={{height: 55, width: 55}}
+                />
+                <NameReagent>{selectedItem?.nome}</NameReagent>
               </View>
               <View style={{gap: 10}}>
               <View>
-                <Text style={{fontSize: 16}}>Lote: </Text>
-                <Text style={{fontSize: 16}}>{selectedItem?.numero}</Text>
+                <InformationText>Lote: </InformationText>
+                <InformationText>{selectedItem?.numero}</InformationText>
               </View>
 
               <View>
-                <Text style={{fontSize: 16}}>Quantidade de Frascos: </Text>
-                <Text style={{fontSize: 16}}>{selectedItem?.quantidade_frascos}</Text>
+                <InformationText>Quantidade de Frascos: </InformationText>
+                <InformationText>{selectedItem?.quantidade_frascos}</InformationText>
               </View>
 
               <View>
-                <Text style={{fontSize: 16}}>Quantidade Unitário: </Text>
-                <Text style={{fontSize: 16}}>{selectedItem?.quantidade_unitario + selectedItem?.unidade_medida}</Text>
+                <InformationText>Quantidade Unitário: </InformationText>
+                <InformationText>{selectedItem?.quantidade_unitario + selectedItem?.unidade_medida}</InformationText>
               </View>
 
               <View>
-                <Text style={{fontSize: 16}}>Quantidade Total: </Text>
-                <Text style={{fontSize: 16}}>{selectedItem?.quantidade_geral + selectedItem?.unidade_medida}</Text>
+                <InformationText>Quantidade Total: </InformationText>
+                <InformationText>{selectedItem?.quantidade_geral + selectedItem?.unidade_medida}</InformationText>
               </View>
 
               <View>
-                <Text style={{fontSize: 16}}>Validade: </Text>
-                <Text style={{fontSize: 16}}>{moment(selectedItem?.validade, "YYYY/MM/DD").format("DD-MM-YYYY") }</Text>
+                <InformationText>Validade: </InformationText>
+                <InformationText>{moment(selectedItem?.validade, "YYYY/MM/DD").format("DD-MM-YYYY") }</InformationText>
               </View>
 
               <View>
-                <Text style={{fontSize: 16}}>Localização: </Text>
-                <Text style={{fontSize: 16}}>{selectedItem?.localizacao}</Text>
+                <InformationText>Localização: </InformationText>
+                <InformationText>{selectedItem?.localizacao}</InformationText>
               </View>
               </View>
               </ScrollView>
@@ -200,7 +216,7 @@ const SearchReagent = ({ navigation }) => {
               <TouchableOpacity
               onPress={()=>{setModalVisible(false);navigation.navigate('EditReagent', {selectedItem})}}
               >
-                <Feather name='edit' size={37} color={'rgb(0, 0, 0)'}/>
+                <Feather name='edit' size={37} color={theme=='dark' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)'}/>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={()=>{setModalVisible2(true); setModalVisible(false)}}>
@@ -209,10 +225,10 @@ const SearchReagent = ({ navigation }) => {
             </View>
 
             <TouchableOpacity onPress={() => {setModalVisible(false)}} style={{position: 'absolute', top: 0, right: 0, padding: 5}}>
-                <Ionicons name='close' size={30} color={'rgb(0, 0, 0)'}/>
+                <Ionicons name='close' size={30} color={theme=='dark' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)'}/>
             </TouchableOpacity>
-          </View>
-        </View>
+          </ContainerModalData>
+        </CenterModal>
         </Modal>
         <Modal
           visible={modalVisible2}

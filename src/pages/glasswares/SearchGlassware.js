@@ -1,14 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DatabaseConnection } from '../../databases/DatabaseConnection'; 
 import { TextInput } from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, Feather } from 'react-native-vector-icons';
+import ThemeContext from '../../context/ThemeContext';
+import {
+  RegularText,
+  ContainerSearch,
+  FlatItem,
+  TextInputContainer
+} from '../../styles/CommonStyles';
 
 import { consultGlasswares } from '../../databases/DatabaseQueries';
 const database = DatabaseConnection.getConnectionDatabase();
 
+
 const SearchGlassware = ({ navigation }) => {
+  const {theme, color} = useContext(ThemeContext);
+  const basedColor = theme == 'dark' ? '#FFF': '#000';
   const [isDatabaseReady, setDatabaseReady] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [data, setData] = useState([]);
@@ -83,51 +93,53 @@ const SearchGlassware = ({ navigation }) => {
   }, [navigation]);
   const renderVidrariaItem = ({ item }) => (
     <TouchableOpacity onLongPress={()=>{handleShowModal(item)}}>
-    <View style={styles.itemContainer}>
+    <FlatItem>
       <View>
-        <Text style={styles.itemNome}>{item.nome}</Text>
-        <Text style={styles.itemQuantidade}>{item.capacidade}</Text>
-        <Text style={styles.itemQuantidade}>{`Quantidade: ${item.quantidade}`} unidades</Text>
-        {!item.descricao ? undefined : <Text style={styles.itemDescricao}>{item.descricao}</Text>}
+        <RegularText style={{fontWeight: 'bold', fontSize: 16}}>{item.nome}</RegularText>
+        <RegularText>{item.capacidade}</RegularText>
+        <RegularText>{`Quantidade: ${item.quantidade}`} unidades</RegularText>
+        {!item.descricao ? undefined : <RegularText style={styles.itemDescricao}>{item.descricao}</RegularText>}
       </View>
 
       <View style={{flexDirection: 'row', gap: 10}}>
         <TouchableOpacity onPress={()=>{handleShowModalEdit(item)}}>
-          <Feather name='edit' size={37} color={'rgb(0, 0, 0)'}/>
+          <Feather name='edit' size={37} color={basedColor}/>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=>{handleShowModal(item)}}>
           <AntDesign name='delete' size={37} color={'rgb(240, 10, 10)'}/>
         </TouchableOpacity>
       </View>
-    </View>
+    </FlatItem>
     </TouchableOpacity>
   );
 
   return (
     <View>
-      <View style={{height: "100%"}}>
+      <ContainerSearch>
+      <TextInputContainer style={{marginVertical: 5, marginHorizontal: 16}}>
       <TextInput
           placeholder="Pesquise aqui"
           placeholderTextColor='rgb(200, 200, 200)'
           onChangeText={handleSearch}
           style={{
-            backgroundColor: 'rgb(255, 255, 255)',
-            margin: 4,
+            color: basedColor,
             padding:10
           }}
         />
+        </TextInputContainer>
         <FlatList
           data={filteredData}
           renderItem={renderVidrariaItem}
           keyExtractor={(_, item) => item.toString()}
         />
         <TouchableOpacity
-        style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
+        style={{position: 'absolute', bottom: 50, right: 0, padding: 25}}
         onPress={()=>{navigation.navigate('RegisterGlassware')}}
           >
-          <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
+          <AntDesign name="pluscircle" size={65} color={color}/>
         </TouchableOpacity>
-        </View>
+
+        </ContainerSearch>
         <Modal
           visible={modalVisible2}
           transparent={true}
@@ -201,30 +213,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-  },
-  itemContainer: {
-    borderRadius: 10,
-    backgroundColor: '#FFF',
-    padding: 15,
-    marginVertical: 5,
-    marginHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap'
-  },
-  itemNome: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  itemDescricao: {
-    fontSize: 14,
-  },
-  itemQuantidade: {
-    fontSize: 14,
-  },
-  itemCapacidade: {
-    fontSize: 14,
   },
   centermodal:{
     height: '100%',

@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, Alert } from 'react-native';
-
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, ScrollView } from 'react-native';
+import { Container, RegularText, TextInputContainer, Label } from '../../styles/CommonStyles'
 import { DatabaseConnection } from '../../databases/DatabaseConnection';
-
+import ThemeContext from '../../context/ThemeContext';
 
 const database = DatabaseConnection.getConnectionDatabase();
 
@@ -12,6 +11,9 @@ const RegisterGlassware = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [capacidades, setCapacidades] = useState([{ capacidade: '', quantidade: '' }]);
+
+  const { theme } = useContext(ThemeContext)
+  const basedColor = theme == 'dark' ? '#FFF' : '#000';
 
   const adicionarCapacidade = () => {
     setCapacidades([...capacidades, { capacidade: '', quantidade: '' }]);
@@ -30,8 +32,8 @@ const RegisterGlassware = () => {
   };
 
   const handleSubmit = () => {
-    if(!nome){
-      Alert.alert('Atenção','Por favor preencha o nome da Vidraria!');
+    if (!nome) {
+      Alert.alert('Atenção', 'Por favor preencha o nome da Vidraria!');
       return;
     }
     const hasEmptyField = (obj) => {
@@ -44,10 +46,10 @@ const RegisterGlassware = () => {
     };
 
     const hasEmptyValue = capacidades.some((value) => hasEmptyField(value));
-    
 
-    if(hasEmptyValue){
-      Alert.alert('Atenção','Por favor preencha as capacidades corretamente!');
+
+    if (hasEmptyValue) {
+      Alert.alert('Atenção', 'Por favor preencha as capacidades corretamente!');
       return;
     }
     database.transaction((tx) => {
@@ -61,7 +63,7 @@ const RegisterGlassware = () => {
             tx.executeSql(
               'INSERT INTO Capacidades (vidraria_id, capacidade, quantidade) VALUES (?, ?, ?)',
               [vidrariaId, cap, quantidade],
-              () => {console.log('sucess')},
+              () => { console.log('sucess') },
               (tx, error) => {
                 console.error('Erro ao inserir capacidade no banco de dados', error);
               }
@@ -83,19 +85,25 @@ const RegisterGlassware = () => {
   const renderCapacidadeItem = ({ item, index }) => {
     return (
       <View style={styles.capacidadeItem}>
-        <TextInput
-          style={styles.capacidadeInput}
-          value={item.capacidade}
-          onChangeText={(valor) => handleCapacidadeChange(index, 'capacidade', valor)}
-          placeholder="Digite a capacidade da vidraria"
-        />
-        <TextInput
-          style={styles.quantidadeInput}
-          value={item.quantidade}
-          onChangeText={(valor) => handleCapacidadeChange(index, 'quantidade', valor)}
-          placeholder="Digite a quantidade"
-          keyboardType="numeric"
-        />
+        <TextInputContainer style={{ width: '33%' }}>
+          <TextInput
+            style={[styles.capacidadeInput, {color:basedColor}]}
+            value={item.capacidade}
+            onChangeText={(valor) => handleCapacidadeChange(index, 'capacidade', valor)}
+            placeholder="Ex: 200ml"
+            placeholderTextColor='rgb(200, 200, 200)'
+          />
+        </TextInputContainer>
+        <TextInputContainer style={{ width: '33%' }}>
+          <TextInput
+            style={[styles.quantidadeInput, {color:basedColor}]}
+            value={item.quantidade}
+            onChangeText={(valor) => handleCapacidadeChange(index, 'quantidade', valor)}
+            placeholder="Ex: 3"
+            placeholderTextColor='rgb(200, 200, 200)'
+            keyboardType="numeric"
+          />
+        </TextInputContainer>
         <TouchableOpacity onPress={() => removerCapacidade(index)}>
           <Text style={styles.removerCapacidade}>Remover</Text>
         </TouchableOpacity>
@@ -104,19 +112,21 @@ const RegisterGlassware = () => {
   };
 
   return (
-    <View>
-      <Text style={styles.titleinput}>Nome:</Text>
-      <TextInput
-        style={styles.input}
-        value={nome}
-        onChangeText={setNome}
-        placeholder="Digite o nome da vidraria"
-      />
-
-      <Text style={styles.titleinput}>Capacidades:</Text>
-      <View style={{margin: 10}}>
+    <Container style={{ padding: 16 }}>
+      <ScrollView>
+        <Label>Nome:</Label>
+        <TextInputContainer>
+          <TextInput
+            style={[styles.input, { color: basedColor }]}
+            value={nome}
+            onChangeText={setNome}
+            placeholderTextColor='rgb(200, 200, 200)'
+            placeholder="Digite o nome da vidraria"
+          />
+        </TextInputContainer>
+        <Label>Capacidades:</Label>
         <FlatList
-          style={{height: 200}}
+          scrollEnabled={false}
           data={capacidades}
           renderItem={renderCapacidadeItem}
           keyExtractor={(_, item) => item.toString()}
@@ -124,23 +134,26 @@ const RegisterGlassware = () => {
         <TouchableOpacity onPress={adicionarCapacidade}>
           <Text style={styles.adicionarCapacidade}>Adicionar Capacidade</Text>
         </TouchableOpacity>
-      </View>
-      <Text style={styles.titleinput}>Localização:</Text>
-      <TextInput
-        style={styles.input}
-        value={descricao}
-        onChangeText={setDescricao}
-        placeholder="Digite a localização da vidraria"
-        multiline
-      />
-      <View style={{alignItems: 'center', width: '100%'}}>
-      <TouchableOpacity onPress={handleSubmit}>
-        <View style={styles.botaoSalvar}>
-          <Text style={{fontSize: 16, color: '#fff'}} >Salvar</Text>
+        <Label>Localização:</Label>
+        <TextInputContainer>
+          <TextInput
+            style={[styles.input, {color:basedColor}]}
+            value={descricao}
+            onChangeText={setDescricao}
+            placeholder="Digite a localização da vidraria"
+            placeholderTextColor='rgb(200, 200, 200)'
+            multiline
+          />
+        </TextInputContainer>
+        <View style={{ alignItems: 'center', marginVertical: 20 }}>
+          <TouchableOpacity onPress={handleSubmit}>
+            <View style={styles.botaoSalvar}>
+              <Text style={{ fontSize: 16, color: '#fff' }} >Salvar</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+    </Container>
   );
 };
 
@@ -150,32 +163,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
   },
-  input:{
-    margin: 10,
+  input: {
     padding: 7,
     borderRadius: 5,
-    backgroundColor: 'rgb(255, 255, 255)'
   },
-  titleinput:{
+  titleinput: {
     marginTop: 10,
     marginHorizontal: 16,
   },
   capacidadeItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 5
   },
   capacidadeInput: {
-    flex: 2,
     padding: 7,
-    borderRadius: 5,
-    backgroundColor: 'rgb(255, 255, 255)'
   },
   quantidadeInput: {
-    flex: 1,
-    margin: 10,
     padding: 7,
-    borderRadius: 5,
-    backgroundColor: 'rgb(255, 255, 255)'
   },
   removerCapacidade: {
     color: 'red',
@@ -185,8 +191,8 @@ const styles = StyleSheet.create({
     color: 'blue',
     marginTop: 10,
   },
-  botaoSalvar:{
-    height:45,
+  botaoSalvar: {
+    height: 45,
     width: 230,
     backgroundColor: 'rgb(0, 140, 255)',
     alignItems: 'center',

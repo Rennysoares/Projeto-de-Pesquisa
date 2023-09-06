@@ -1,13 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Button, ScrollView, Alert, TextInput } from 'react-native';
 import moment from 'moment';
 import { DatabaseConnection } from '../../databases/DatabaseConnection';
 import { AntDesign } from 'react-native-vector-icons';
 import {Picker} from '@react-native-picker/picker';
-
+import {Container} from '../../styles/CommonStyles'
 const database = DatabaseConnection.getConnectionDatabase()
+import ThemeContext from '../../context/ThemeContext';
 
 const ValidityReagents = ({navigation}) =>{
+
+    const {theme, color} = useContext(ThemeContext);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    const ControllerColor = (dark, light) => {
+      return theme=="dark" ? dark : light
+    }
+
+    const handleShowModal = (item) => {
+      setSelectedItem(item);
+      setModalVisible(true);
+    };
+
+    const deleteItem = (itemId) => {
+      database.transaction(tx => {
+        tx.executeSql(
+          'DELETE FROM produto WHERE id = ?',
+          [itemId],
+          () => {
+            console.log('Item deletado com sucesso!');
+          },
+          error => {
+            console.log('Erro ao deletar item:', error);
+          }
+        );
+      });
+  
+      database.transaction(tx => {
+        tx.executeSql(
+          'DELETE FROM lote WHERE id = ?',
+          [itemId],
+          () => {
+            console.log('Item deletado com sucesso!');
+          },
+          error => {
+            console.log('Erro ao deletar item:', error);
+          }
+        );
+      });
+      setModalVisible(false)    
+    };
 
     const [itemsNearExpiration, setItemsNearExpiration] = useState([]);
     const [itemsOutOfExpiration, setItemsOutOfExpiration] = useState([]);
@@ -111,12 +154,16 @@ const ValidityReagents = ({navigation}) =>{
     );
 
     return(
-        <View>
+        <Container>
             <Picker
               selectedValue={option}
               onValueChange={(itemValue, itemIndex) =>
                 setOption(itemValue)
-              }>
+              }
+              style={{color: ControllerColor("#FFF", "#000")}}
+              dropdownIconColor={ControllerColor("#FFF", "#000")}
+              mode="dropdown"
+              >
               <Picker.Item label="Fora da validade" value="fora" />
               <Picker.Item label="Próximos da validade (7 dias)" value="prox" />
             </Picker>
@@ -142,7 +189,45 @@ const ValidityReagents = ({navigation}) =>{
           </View>
         </View>
       )}
+      <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="fade"
+        >
+        <View style={styles.centermodal}>
+          <View style={styles.modal2}>
+            <Text style={{textAlign: 'center'}}>Tem certeza?</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+              <TouchableOpacity
+                onPress={()=>{
+                  deleteItem(selectedItem.id);
+                  getItemsNearExpiration(7, items => {
+                    console.log('Itens próximos da validade:', items);
+                    setItemsNearExpiration(items);
+                  });
+                  getItemsOutOfExpiration(items => {
+                      console.log('Itens fora da validade:',items)
+                      setItemsOutOfExpiration(items)
+                  })
+                
+                }}
+              >
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(0, 255, 0 )'}]}>
+                <Text>Sim</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+              onPress={()=>{setModalVisible(false)}}
+              >
+                <View style={[styles.buttonmodal, {backgroundColor: 'rgb(255, 0, 0 )'}]}>
+                <Text>Não</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>  
         </View>
+        </Modal>
+        </Container>
     )
 }
 
@@ -211,7 +296,70 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       backgroundColor: 'rgb(255, 255, 255)'
     },
-
+    item: {
+      borderRadius: 10,
+      backgroundColor: '#FFF',
+      padding: 15,
+      marginVertical: 5,
+      marginHorizontal: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap'
+    },
+    title: {
+      fontSize: 15,
+    },
+    headerReagentes:{
+      backgroundColor: 'rgb(255, 255, 255)',
+      height: 50,
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    titleHeader:{
+      fontWeight: '500',
+      fontSize: 17,
+    },
+    image:{
+      height: 25,
+      width: 25,
+      marginHorizontal: 16,
+    },
+    centermodal:{
+      height: '100%',
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.3)'
+    },
+    modal:{
+      backgroundColor: 'rgb(255, 255, 255)',
+      padding: 20,
+      height: 450,
+      width: '80%',
+      borderRadius: 10,
+      rowGap: 5,
+    },
+    buttonmodal:{
+      borderRadius: 10,
+      height: 40,
+      width: 90,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    txtbuttonmodal:{
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    modal2:{
+      backgroundColor: 'rgb(255, 255, 255)',
+      padding: 20,
+      height: '25%',
+      width: '75%',
+      borderRadius: 15,
+      rowGap: 5,
+      justifyContent: 'space-around'
+    },
 })
 
 

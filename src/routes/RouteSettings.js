@@ -6,7 +6,7 @@ import { forFade, forHorizontalSlide, forVerticalSlide, } from '../animations/An
 import Settings from '../pages/settings/Settings';
 import Theme_custom from '../pages/settings/theme_custom/Theme_custom';
 import SelectColor from '../pages/settings/theme_custom/SelectColor';
-
+import {Ionicons} from 'react-native-vector-icons';
 import themes from '../themes/Themes';
 const StackSettings = createStackNavigator();
 import ThemeContext from '../context/ThemeContext';
@@ -38,15 +38,10 @@ export default function RouteSettings({ navigation }) {
             title: 'Configurações',
             headerLeft: () => (
               <TouchableOpacity
-                onPress={() => { navigation.goBack(); }}>
-                <Image
-                  source={require('../../assets/setanavigator.png')}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    marginHorizontal: 16,
-                  }}
-                />
+                onPress={() => { navigation.goBack(); }}
+                style={{marginHorizontal: 15}}
+              >
+                <Ionicons name='arrow-back' size={25} color={`${theme === 'light' ? '#000' : '#FFF'}`}/>
               </TouchableOpacity>
             ),
           }}

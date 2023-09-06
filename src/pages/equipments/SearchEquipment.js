@@ -7,8 +7,19 @@ import { MaskedTextInput } from 'react-native-mask-text';
 import moment from 'moment';
 const database = DatabaseConnection.getConnectionDatabase();
 
-const SearchEquipment = ({navigation}) =>{
+import {
+  RegularText,
+  ContainerSearch,
+  FlatItem,
+  TextInputContainer
+} from '../../styles/CommonStyles';
 
+import ThemeContext from '../../context/ThemeContext';
+import { useContext } from 'react';
+
+const SearchEquipment = ({navigation}) =>{
+    const { theme, color } = useContext(ThemeContext);
+    const basedColor = theme == 'dark' ? '#FFF': '#000';
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [modalDelete, setModalDelete] = useState(false);
@@ -66,7 +77,8 @@ const SearchEquipment = ({navigation}) =>{
       database.transaction(tx => {
         tx.executeSql(
           'UPDATE Equipamentos SET nome = ?, quantidade = ?, validade = ?, localizacao = ? WHERE id = ?;',
-          [nome,quantidade,validade[6]+validade[7]+validade[8]+validade[9]+validade[5]+validade[3]+validade[4]+validade[2]+validade[0]+validade[1],localizacao,id],
+          [nome,quantidade,
+            moment(validade, "DD-MM-YYYY").format("YYYY-MM-DD"),localizacao,id],
           () => {
             console.log('Item atualizado com sucesso!');
             Alert.alert('Sucesso', 'Item atualizado com sucesso!')
@@ -100,56 +112,56 @@ const SearchEquipment = ({navigation}) =>{
     }
 
     const renderItem = ({ item }) => (
-        <View style={styles.item}>
+        <FlatItem>
           <View>
             <View style={{width: 200}}>
-            <Text>Equipamento: {item.nome}</Text>
+            <RegularText>{item.nome}</RegularText>
             </View>
-            <Text>Quantidade: {item.quantidade}</Text>
-            {item.validade == "Invalid date" ? undefined : <Text>Validade: {moment(item.validade, "YYYY/MM/DD").format("DD-MM-YYYY")}</Text>}
-            {!item.localizacao ? undefined : <Text>Localização: {item.localizacao}</Text>}
+            <RegularText>Quantidade: {item.quantidade}</RegularText>
+            {item.validade == "Invalid date" ? undefined : <RegularText>Validade: {moment(item.validade, "YYYY/MM/DD").format("DD-MM-YYYY")}</RegularText>}
+            {!item.localizacao ? undefined : <RegularText>Localização: {item.localizacao}</RegularText>}
           </View>
 
           <View style={{flexDirection: 'row', gap: 10}}>
             <TouchableOpacity onPress={()=>{handleShowModalEdit(item)}}>
-              <Feather name='edit' size={37} color={'rgb(0, 0, 0)'}/>
+              <Feather name='edit' size={37} color={basedColor}/>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>{handleShowModal(item)}}>
               <AntDesign name='delete' size={37} color={'rgb(240, 10, 10)'}/>
             </TouchableOpacity>
           </View>
 
-        </View>
+        </FlatItem>
       );
 
 
     return(
         <View>
-            <TextInput
-                placeholder="Pesquise aqui"
-                placeholderTextColor='rgb(200, 200, 200)'
-                onChangeText={handleSearch}
-                style={{
-                    backgroundColor: 'rgb(255, 255, 255)',
-                    margin: 4,
-                    padding:10
-                }}
-            />
-            
-            <View style={{height: '93%' }}>
+          <ContainerSearch>
+            <TextInputContainer style={{marginVertical: 5, marginHorizontal: 16}}>
+              <TextInput
+                  placeholder="Pesquise aqui"
+                  placeholderTextColor='rgb(200, 200, 200)'
+                  onChangeText={handleSearch}
+                  style={{
+                      color: basedColor,
+                      padding:10
+                  }}
+              />
+            </TextInputContainer>
             <FlatList
                 data={filteredData}
                 extraData={data}
                 renderItem={renderItem}
                 keyExtractor={(_, index) => index.toString()}
             />
-            </View>
             <TouchableOpacity
               style={{position: 'absolute', bottom: 0, right: 0, padding: 25}}
               onPress={()=>{navigation.navigate('RegisterEquipment')}}
             >
-                <AntDesign name="pluscircle" size={65} color={'rgb(0, 200, 0)'}/>
+                <AntDesign name="pluscircle" size={65} color={color}/>
             </TouchableOpacity>
+            </ContainerSearch>
             <Modal
               visible={modalDelete}
               transparent={true}

@@ -1,42 +1,50 @@
-import {React, useState, useEffect} from 'react';
+import { React, useState, useEffect, useContext } from 'react';
 import {
-  Text, 
-  View, 
-  StyleSheet, 
-  TextInput, 
-  TouchableOpacity, 
-  Image, 
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Image,
   Button,
   Switch,
   ScrollView,
   Alert
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
+import {
+  Container,
+  Label,
+  TextInputContainer
+} from '../../styles/CommonStyles';
+import ThemeContext from '../../context/ThemeContext';
 import { MaskedTextInput } from 'react-native-mask-text';
 import moment from 'moment';
 import { DatabaseConnection } from '../../../src/databases/DatabaseConnection';
-const dbreagent = DatabaseConnection.getConnectionDBReagent();
 const database = DatabaseConnection.getConnectionDatabase();
 
-export default function RegisterReagent( { navigation }){
+export default function RegisterReagent({ navigation }) {
 
-  const[nomeReagente, setNomeReagente] = useState('')
-  const[lote, setLote ] = useState('')
-  const[quantidadeUnitario, setQuantidadeUnitario] = useState('')
-  const[validade, setValidade] = useState('')
-  const[localizacao, setLocalizacao] = useState('')
-  const[sufixo, setSufixo] = useState();
-  const[quantidadeFrascos, setQuantidadeFrascos] = useState('')
-  const[quantidadeCalculada, setQuantidadeCalculada] = useState('')
-  
-  function formatData () {
+  const [nomeReagente, setNomeReagente] = useState('')
+  const [lote, setLote] = useState('')
+  const [quantidadeUnitario, setQuantidadeUnitario] = useState('')
+  const [validade, setValidade] = useState('')
+  const [localizacao, setLocalizacao] = useState('')
+  const [sufixo, setSufixo] = useState();
+  const [quantidadeFrascos, setQuantidadeFrascos] = useState('')
+  const [quantidadeCalculada, setQuantidadeCalculada] = useState('')
+
+  const { theme } = useContext(ThemeContext)
+  const basedColor = theme == 'dark' ? '#FFF' : '#000';
+
+
+
+  function formatData() {
     const data = moment(validade, "DD/MM/YYYY");
     return data.format("YYYY-MM-DD");
   }
-  
-  useEffect(()=>{
-    setQuantidadeCalculada(parseFloat(quantidadeFrascos)*parseFloat(quantidadeUnitario))
+
+  useEffect(() => {
+    setQuantidadeCalculada(parseFloat(quantidadeFrascos) * parseFloat(quantidadeUnitario))
   })
 
   function insertDatas() {
@@ -48,7 +56,7 @@ export default function RegisterReagent( { navigation }){
         (tx, result) => {
           const loteId = result.insertId; // Recupera o ID do lote inserido
           console.log('Lote inserido com sucesso', loteId);
-  
+
           tx.executeSql(
             'INSERT INTO produto (nome, lote_id) VALUES (?, ?)',
             [nomeReagente, loteId], // Insere o ID do lote recuperado
@@ -67,174 +75,185 @@ export default function RegisterReagent( { navigation }){
     });
   }
 
-  return(
-    <View>
+  return (
+    <Container style={{ paddingHorizontal: 16 }}>
       <ScrollView>
-      <Text style={styles.titleinput}>Nome do reagente: </Text>
-      <TextInput
-        value={nomeReagente}
-        onChangeText={setNomeReagente}
+        <Label>Nome do reagente: </Label>
+        <TextInputContainer>
+          <TextInput
+            value={nomeReagente}
+            onChangeText={setNomeReagente}
+            style={[styles.txtInput, { color: basedColor }]}
+            placeholder="Ex: Ácido Clorídrico"
+            placeholderTextColor='rgb(200, 200, 200)'
+          />
+        </TextInputContainer>
 
-        style={styles.txtInput}
-        placeholder="Ex: Ácido Clorídrico"
-        placeholderTextColor='rgb(200, 200, 200)'
-      />
+        <Label>Lote: </Label>
+        <TextInputContainer>
+          <TextInput
+            value={lote}
+            onChangeText={setLote}
+            keyboardType="numeric"
+            style={[styles.txtInput, { color: basedColor }]}
+            placeholder="Ex: 7234923"
+            placeholderTextColor='rgb(200, 200, 200)'
+          />
+        </TextInputContainer>
 
-      <Text style={styles.titleinput}>Lote: </Text>
-      <TextInput
-        value={lote}
-        onChangeText={setLote}
-        keyboardType="numeric"
-        style={styles.txtInput}
-        placeholder="Ex: 7234923"
-        placeholderTextColor='rgb(200, 200, 200)'
-      />
+        <Label>Quantidade de cada frasco: </Label>
 
-      <Text style={styles.titleinput}>Quantidade de cada frasco: </Text>
-      
-      <View style={{alignItems: 'center', flexDirection: 'row',}}>
-        <View style={{alignItems: 'center', flexDirection: 'row'}}>
-        <TextInput
-          value={quantidadeUnitario}
-          onChangeText={setQuantidadeUnitario}
-          keyboardType="numeric"
-          maxLength={4}
-          style={[styles.txtInput, {width: 100}]}
-          placeholder="Ex: 120"
-          placeholderTextColor='rgb(200, 200, 200)'
-        />
-        </View>
-        <View style={{width: 100, alignItems: 'center'}}>
-        <TextInput
-          value={sufixo}
-          onChangeText={setSufixo}
-          style={[styles.txtInput, {width: 100}]}
-          autoCapitalize="none"
-          placeholder="Ex: ml"
-          maxLength={8}
-          placeholderTextColor='rgb(200, 200, 200)'
-        />
-        </View>
-      </View>
-      <Text style={styles.titleinput}>Quantidade de frascos: </Text>
-      <TextInput
-        value={quantidadeFrascos}
-        onChangeText={setQuantidadeFrascos}
-        style={styles.txtInput}
-        placeholder="Ex: 2"
-        maxLength={3}
-        keyboardType="numeric"
-        placeholderTextColor='rgb(200, 200, 200)'
-      />
+        <View style={{ alignItems: 'center', flexDirection: 'row', gap: 10}}>
 
-      <Text style={styles.titleinput}>Validade: </Text>
-
-      <MaskedTextInput
-          mask="99-99-9999"
-          placeholder="Ex: 01-01-2021"
-          placeholderTextColor='rgb(200, 200, 200)'
-          onChangeText={setValidade}
-          value={validade}
-          keyboardType="numeric"
-          style={styles.txtInput}
-        />
-
-      <Text style={styles.titleinput}>Localização: </Text>
-      <TextInput
-        value={localizacao}
-        onChangeText={setLocalizacao}
-
-        placeholder="Ex: Armário de Reagentes"
-        placeholderTextColor='rgb(200, 200, 200)'
-        style={styles.txtInput}
-      />
-      <View style={{alignItems: 'center', width: '100%'}}>
-        <TouchableOpacity
-          //disabled={true}
-          onPress={()=>{
-            if (!nomeReagente) {
-              Alert.alert('Atenção','Por favor preencha o nome do Reagente!');
-              return;
-            }
-            if(!lote){
-              Alert.alert('Atenção','Por favor preencha o número de lote');
-              return;
-            }
-            if(!quantidadeUnitario){
-              Alert.alert('Atenção','Por favor preencha a quantidade de cada frascos');
-              return;
-            }
-            if(quantidadeUnitario == 0 || quantidadeUnitario < 0){
-              Alert.alert('Atenção','Por favor preencha a quantidade de cada frasco corretamente');
-              return;
-            }
-            if(!sufixo){
-              Alert.alert('Atenção','Por favor preencha a unidade de medida');
-              return;
-            }
-            if(!quantidadeFrascos){
-              Alert.alert('Atenção','Por favor preencha a quantidade de frascos');
-              return;
-            }
-            if(quantidadeFrascos == 0 || quantidadeFrascos < 0){
-              Alert.alert('Atenção','Por favor preencha a quantidade de frascos corretamente');
-              return;
-            }
-            if(!validade){
-              Alert.alert('Atenção','Por favor preencha validade');
-              return;
-            }
-            insertDatas();
-            Alert.alert('Sucesso','Reagentes Cadastrados com sucesso');
-            setNomeReagente('')
-            setLote('')
-            setQuantidadeUnitario('')
-            setSufixo('')
-            setQuantidadeFrascos('')
-            setValidade('')
-            setLocalizacao('')
-          }}
-        >
-          <View style={styles.button}>
-            <Text style={{fontSize: 16, color: '#fff'}}>Cadastrar Reagentes</Text>
+            <TextInputContainer>
+              <TextInput
+                value={quantidadeUnitario}
+                onChangeText={setQuantidadeUnitario}
+                keyboardType="numeric"
+                maxLength={4}
+                style={[styles.txtInput, { width: 100, color: basedColor }]}
+                placeholder="Ex: 120"
+                placeholderTextColor='rgb(200, 200, 200)'
+              />
+            </TextInputContainer>
+        
+          <View style={{ width: 100, alignItems: 'center' }}>
+            <TextInputContainer>
+              <TextInput
+                value={sufixo}
+                onChangeText={setSufixo}
+                style={[styles.txtInput, { width: 100, color: basedColor }]}
+                autoCapitalize="none"
+                placeholder="Ex: ml"
+                maxLength={8}
+                placeholderTextColor='rgb(200, 200, 200)'
+              />
+            </TextInputContainer>
           </View>
+        </View>
+        <Label>Quantidade de frascos: </Label>
+        <TextInputContainer>
+          <TextInput
+            value={quantidadeFrascos}
+            onChangeText={setQuantidadeFrascos}
+            style={[styles.txtInput, { color: basedColor }]}
+            placeholder="Ex: 2"
+            maxLength={3}
+            keyboardType="numeric"
+            placeholderTextColor='rgb(200, 200, 200)'
+          />
+        </TextInputContainer>
+
+        <Label>Validade: </Label>
+        <TextInputContainer>
+          <MaskedTextInput
+            mask="99-99-9999"
+            placeholder="Ex: 01-01-2021"
+            placeholderTextColor='rgb(200, 200, 200)'
+            onChangeText={setValidade}
+            value={validade}
+            keyboardType="numeric"
+            style={[styles.txtInput, { color: basedColor }]}
+          />
+        </TextInputContainer>
+
+        <Label>Localização: </Label>
+        <TextInputContainer>
+          <TextInput
+            value={localizacao}
+            onChangeText={setLocalizacao}
+
+            placeholder="Ex: Armário de Reagentes"
+            placeholderTextColor='rgb(200, 200, 200)'
+            style={[styles.txtInput, { color: basedColor }]}
+          />
+        </TextInputContainer>
+
+        <View style={{ alignItems: 'center', width: '100%', marginVertical: 15 }}>
+          <TouchableOpacity
+            //disabled={true}
+            onPress={() => {
+              if (!nomeReagente) {
+                Alert.alert('Atenção', 'Por favor preencha o nome do Reagente!');
+                return;
+              }
+              if (!lote) {
+                Alert.alert('Atenção', 'Por favor preencha o número de lote');
+                return;
+              }
+              if (!quantidadeUnitario) {
+                Alert.alert('Atenção', 'Por favor preencha a quantidade de cada frascos');
+                return;
+              }
+              if (quantidadeUnitario == 0 || quantidadeUnitario < 0) {
+                Alert.alert('Atenção', 'Por favor preencha a quantidade de cada frasco corretamente');
+                return;
+              }
+              if (!sufixo) {
+                Alert.alert('Atenção', 'Por favor preencha a unidade de medida');
+                return;
+              }
+              if (!quantidadeFrascos) {
+                Alert.alert('Atenção', 'Por favor preencha a quantidade de frascos');
+                return;
+              }
+              if (quantidadeFrascos == 0 || quantidadeFrascos < 0) {
+                Alert.alert('Atenção', 'Por favor preencha a quantidade de frascos corretamente');
+                return;
+              }
+              if (!validade) {
+                Alert.alert('Atenção', 'Por favor preencha validade');
+                return;
+              }
+              insertDatas();
+              Alert.alert('Sucesso', 'Reagentes Cadastrados com sucesso');
+              setNomeReagente('')
+              setLote('')
+              setQuantidadeUnitario('')
+              setSufixo('')
+              setQuantidadeFrascos('')
+              setValidade('')
+              setLocalizacao('')
+            }}
+          >
+            <View style={styles.button}>
+              <Text style={{ fontSize: 16, color: '#fff' }}>Cadastrar Reagentes</Text>
+            </View>
           </TouchableOpacity>
         </View>
-        <View style={{height: 100}}>
+        <View style={{ height: 100 }}>
         </View>
       </ScrollView>
-    </View>
-  )
+    </Container>
+  );
+
 }
 
 const styles = StyleSheet.create({
-  headerReagentes:{
+  headerReagentes: {
     backgroundColor: 'rgb(255, 255, 255)',
     height: 55,
     flexDirection: 'row',
     alignItems: 'center'
   },
-  titleHeader:{
+  titleHeader: {
     fontWeight: '500',
     fontSize: 17,
   },
-  txtInput:{
-    margin: 10,
+  txtInput: {
     padding: 7,
-    borderRadius: 5,
-    backgroundColor: 'rgb(255, 255, 255)'
   },
-  titleinput:{
+  titleinput: {
     marginTop: 10,
     marginHorizontal: 16,
   },
-  image:{
+  image: {
     height: 20,
     width: 20,
     marginHorizontal: 16,
   },
-  button:{
-    height:45,
+  button: {
+    height: 45,
     width: 230,
     backgroundColor: 'rgb(0, 140, 255)',
     alignItems: 'center',

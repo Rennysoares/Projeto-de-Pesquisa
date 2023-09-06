@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     backgroundColor: '#DDD',
     borderRadius: 7,
-    width: 120,
+    width: 140,
     height: 150,
     marginRight: 10,
   },
